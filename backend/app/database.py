@@ -20,11 +20,7 @@ def _build_db_url(url: str):
     clean_query = urlencode({k: v[0] for k, v in params.items()})
     clean_url = urlunparse(parsed._replace(query=clean_query))
 
-    # asyncpg needs ssl=True for remote hosts
-    is_local = any(h in url for h in ("localhost", "127.0.0.1"))
-    connect_args = {"ssl": True} if not is_local else {}
-
-    return clean_url, connect_args
+    return clean_url, {}
 
 
 _db_url, _connect_args = _build_db_url(settings.DATABASE_URL)

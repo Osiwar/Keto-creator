@@ -29,10 +29,13 @@ async def lifespan(app: FastAPI):
     # Import all models so SQLAlchemy knows about them
     from app.models import user, meal, shopping, subscription, chat
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        await seed_meals()
+    except Exception as e:
+        print(f"[WARNING] DB init failed: {e}")
 
-    await seed_meals()
     yield
 
 
