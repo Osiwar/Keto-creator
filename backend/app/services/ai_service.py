@@ -1,10 +1,15 @@
-import json
 from typing import AsyncGenerator
 from anthropic import AsyncAnthropic
 from app.config import settings
 from app.models.user import UserProfile
 
-client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+_client: AsyncAnthropic | None = None
+
+def get_client() -> AsyncAnthropic:
+    global _client
+    if _client is None:
+        _client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+    return _client
 
 SYSTEM_PROMPT = """You are KetoCoach, a friendly and knowledgeable keto/carnivore nutrition expert and personal coach.
 
@@ -51,7 +56,7 @@ async def stream_chat(
     if profile:
         system += build_user_context(profile)
 
-    async with client.messages.stream(
+    async with get_client().messages.stream(
         model="claude-sonnet-4-6",
         max_tokens=1024,
         system=system,
