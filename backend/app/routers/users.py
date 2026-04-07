@@ -33,6 +33,10 @@ class ProfileUpdate(BaseModel):
     weekly_budget: Optional[float] = None
 
 
+class AllergiesUpdate(BaseModel):
+    allergies: list[str]
+
+
 @router.get("/profile")
 async def get_profile(
     current_user: User = Depends(get_current_user),
@@ -59,6 +63,22 @@ async def get_profile(
         "onboarding_done": profile.onboarding_done,
         "timezone": profile.timezone,
     }
+
+
+@router.patch("/allergies")
+async def update_allergies(
+    data: AllergiesUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(UserProfile).where(UserProfile.user_id == current_user.id))
+    profile = result.scalar_one_or_none()
+    if not profile:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Profile not found")
+    profile.allergies = json.dumps(data.allergies)
+    await db.commit()
+    return {"allergies": data.allergies}
 
 
 @router.post("/onboarding")

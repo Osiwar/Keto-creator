@@ -1,9 +1,152 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, RefreshCw, X, Flame, ChefHat, Users, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Clock, RefreshCw, X, Flame, ChefHat, Users, CheckCircle2, AlertTriangle, ShieldAlert, Check, ChevronDown, ChevronUp } from "lucide-react";
 import api from "@/lib/api";
 import { getWeekStart, formatDate, DAY_NAMES, MEAL_TYPES } from "@/lib/utils";
+
+const ALL_ALLERGENS = [
+  { key: "dairy",     label: "Dairy",     emoji: "🧀" },
+  { key: "eggs",      label: "Eggs",      emoji: "🥚" },
+  { key: "fish",      label: "Fish",      emoji: "🐟" },
+  { key: "shellfish", label: "Shellfish", emoji: "🦐" },
+  { key: "tree-nuts", label: "Nuts",      emoji: "🌰" },
+  { key: "peanuts",   label: "Peanuts",   emoji: "🥜" },
+  { key: "gluten",    label: "Gluten",    emoji: "🌾" },
+  { key: "soy",       label: "Soy",       emoji: "🫘" },
+];
+
+// ─── Allergy Panel ────────────────────────────────────────────────────────────
+function AllergyPanel({ profile, onSaved }: { profile: any; onSaved: (allergies: string[]) => void }) {
+  const initial: string[] = (() => { try { return JSON.parse(profile?.allergies || "[]"); } catch { return []; } })();
+  const [selected, setSelected] = useState<string[]>(initial);
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const hasChanged = JSON.stringify(selected.sort()) !== JSON.stringify([...initial].sort());
+
+  const toggle = (key: string) => {
+    setSelected((prev) => prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]);
+    setSaved(false);
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await api.patch("/users/allergies", { allergies: selected });
+      setSaved(true);
+      onSaved(selected);
+      setTimeout(() => setSaved(false), 2000);
+    } finally { setSaving(false); }
+  };
+
+  return (
+    <motion.div
+      className="rounded-2xl mb-6 overflow-hidden shadow-sm"
+      style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+    >
+      {/* Header */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-5 py-4 hover:opacity-80 transition-opacity"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "rgba(245,158,11,0.15)" }}>
+            <ShieldAlert className="w-4 h-4" style={{ color: "#D97706" }} />
+          </div>
+          <div className="text-left">
+            <p className="font-bold text-sm" style={{ color: "var(--text)" }}>Allergies & Intolerances</p>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              {initial.length === 0
+                ? "No allergies set — meals won't be filtered"
+                : `${initial.length} allergen${initial.length > 1 ? "s" : ""} set: ${initial.map(a => ALL_ALLERGENS.find(x => x.key === a)?.label || a).join(", ")}`
+              }
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {initial.length > 0 && (
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "rgba(245,158,11,0.15)", color: "#D97706" }}>
+              {initial.length} active
+            </span>
+          )}
+          {open ? <ChevronUp className="w-4 h-4" style={{ color: "var(--text-muted)" }} /> : <ChevronDown className="w-4 h-4" style={{ color: "var(--text-muted)" }} />}
+        </div>
+      </button>
+
+      {/* Content */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-5 pt-1" style={{ borderTop: "1px solid var(--border)" }}>
+              <p className="text-xs mb-4 mt-3" style={{ color: "var(--text-muted)" }}>
+                Select your allergens. Meals containing these ingredients will show a warning and the swap suggestions will automatically exclude them.
+              </p>
+
+              {/* Allergen chips */}
+              <div className="flex flex-wrap gap-2 mb-5">
+                {ALL_ALLERGENS.map(({ key, label, emoji }) => {
+                  const active = selected.includes(key);
+                  return (
+                    <motion.button
+                      key={key}
+                      onClick={() => toggle(key)}
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all"
+                      style={{
+                        background: active ? "rgba(239,68,68,0.12)" : "var(--bg-alt)",
+                        border: `1.5px solid ${active ? "#EF4444" : "var(--border)"}`,
+                        color: active ? "#DC2626" : "var(--text-muted)",
+                      }}
+                    >
+                      <span>{emoji}</span>
+                      {label}
+                      {active && <Check className="w-3 h-3" strokeWidth={3} />}
+                    </motion.button>
+                  );
+                })}
+              </div>
+
+              {/* Save button */}
+              <div className="flex items-center gap-3">
+                <motion.button
+                  onClick={save}
+                  disabled={saving || !hasChanged}
+                  whileHover={hasChanged ? { scale: 1.02 } : {}}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white shadow-sm transition-opacity"
+                  style={{
+                    background: saved ? "#10B981" : "var(--accent)",
+                    opacity: (!hasChanged && !saved) ? 0.5 : 1,
+                  }}
+                >
+                  {saving ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : saved ? (
+                    <><Check className="w-4 h-4" strokeWidth={3} /> Saved!</>
+                  ) : (
+                    "Save allergies"
+                  )}
+                </motion.button>
+                {hasChanged && !saving && (
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    Regenerate your meal plan to apply changes
+                  </p>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
 
 // ─── Recipe Modal ────────────────────────────────────────────────────────────
 function RecipeModal({ meal, onClose }: { meal: any; onClose: () => void }) {
@@ -398,9 +541,11 @@ export default function MealPlanPage() {
     setLoading(false);
   };
 
-  const userAllergies: string[] = (() => {
-    try { return JSON.parse(profile?.allergies || "[]"); } catch { return []; }
-  })();
+  const [userAllergies, setUserAllergies] = useState<string[]>([]);
+
+  useEffect(() => {
+    try { setUserAllergies(JSON.parse(profile?.allergies || "[]")); } catch { setUserAllergies([]); }
+  }, [profile]);
 
   const generate = async () => {
     setGenerating(true);
@@ -460,6 +605,14 @@ export default function MealPlanPage() {
           </div>
         )}
       </motion.div>
+
+      {/* Allergy panel — always visible when profile is loaded */}
+      {profile && (
+        <AllergyPanel
+          profile={{ ...profile, allergies: JSON.stringify(userAllergies) }}
+          onSaved={(allergies) => setUserAllergies(allergies)}
+        />
+      )}
 
       {!weekPlan ? (
         <motion.div
