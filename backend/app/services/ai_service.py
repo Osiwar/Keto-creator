@@ -53,7 +53,7 @@ async def stream_chat(
         system += build_user_context(profile)
 
     async with get_client().messages.stream(
-        model="claude-3-5-sonnet-20241022",
+        model="claude-3-haiku-20240307",
         max_tokens=1024,
         system=system,
         messages=messages,
