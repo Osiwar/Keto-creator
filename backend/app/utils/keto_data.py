@@ -5,7 +5,7 @@ MEALS_SEED = [
     {
         "name": "Bacon & Egg Bowl",
         "description": "Crispy bacon strips with fried eggs and melted cheese — the ultimate carnivore breakfast.",
-        "image_url": "https://images.unsplash.com/photo-1484723091739-30990b44cf0c?w=800",
+        "image_url": "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800",
         "diet_type": "both",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -35,7 +35,7 @@ MEALS_SEED = [
     {
         "name": "Keto Avocado Eggs",
         "description": "Baked eggs inside creamy avocado halves with a sprinkle of paprika.",
-        "image_url": "https://images.unsplash.com/photo-1541519227354-08fa5d50c820?w=800",
+        "image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800",
         "diet_type": "keto",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -126,7 +126,7 @@ MEALS_SEED = [
     {
         "name": "Carnivore Sausage Scramble",
         "description": "Pork sausages scrambled with eggs and beef tallow.",
-        "image_url": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800",
+        "image_url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800",
         "diet_type": "both",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -157,7 +157,7 @@ MEALS_SEED = [
     {
         "name": "Ribeye Steak Salad",
         "description": "Sliced ribeye over arugula with parmesan shavings and olive oil dressing.",
-        "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
+        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 10,
@@ -187,7 +187,7 @@ MEALS_SEED = [
     {
         "name": "Ground Beef Bowl",
         "description": "Seasoned ground beef with butter-sautéed mushrooms and a fried egg on top.",
-        "image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
+        "image_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
         "diet_type": "both",
         "meal_type": "lunch",
         "prep_time_mins": 5,
@@ -218,7 +218,7 @@ MEALS_SEED = [
     {
         "name": "Chicken Thigh & Avocado Plate",
         "description": "Crispy skin chicken thighs with sliced avocado and a herb butter sauce.",
-        "image_url": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800",
+        "image_url": "https://images.unsplash.com/photo-1598103442097-8b74394b95c2?w=800",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 5,
@@ -249,7 +249,7 @@ MEALS_SEED = [
     {
         "name": "Tuna Lettuce Wraps",
         "description": "Wild tuna mixed with mayo and celery, wrapped in butter lettuce.",
-        "image_url": "https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?w=800",
+        "image_url": "https://images.unsplash.com/photo-1546039907853-faef73aa6879?w=800",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 10,
@@ -310,7 +310,7 @@ MEALS_SEED = [
     {
         "name": "Salmon Avocado Bowl",
         "description": "Pan-seared salmon fillet over sliced avocado with lemon butter.",
-        "image_url": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800",
+        "image_url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 5,
@@ -406,7 +406,7 @@ MEALS_SEED = [
     {
         "name": "Pork Belly Strips",
         "description": "Slow-roasted pork belly strips with crispy crackling.",
-        "image_url": "https://images.unsplash.com/photo-1432139509613-5c4255815697?w=800",
+        "image_url": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=800",
         "diet_type": "both",
         "meal_type": "dinner",
         "prep_time_mins": 10,
@@ -436,7 +436,7 @@ MEALS_SEED = [
     {
         "name": "Lamb Chops with Rosemary",
         "description": "Grilled lamb chops marinated in garlic and rosemary.",
-        "image_url": "https://images.unsplash.com/photo-1611599537845-1c7aca0091c0?w=800",
+        "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
         "diet_type": "both",
         "meal_type": "dinner",
         "prep_time_mins": 10,
@@ -466,7 +466,7 @@ MEALS_SEED = [
     {
         "name": "Keto Zucchini Lasagna",
         "description": "Classic lasagna layers using thin zucchini slices instead of pasta.",
-        "image_url": "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=800",
+        "image_url": "https://images.unsplash.com/photo-1484980972926-edee96e0960d?w=800",
         "diet_type": "keto",
         "meal_type": "dinner",
         "prep_time_mins": 20,

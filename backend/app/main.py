@@ -31,8 +31,8 @@ async def seed_meals():
                 if not meal.instructions or meal.instructions == "[]":
                     meal.instructions = data.get("instructions", "[]")
                     needs_update = True
-                # Always refresh image URL in case old one expired
-                if data.get("image_url") and meal.image_url != data["image_url"]:
+                # Always refresh image URL
+                if data.get("image_url"):
                     meal.image_url = data["image_url"]
                     needs_update = True
                 if needs_update:
