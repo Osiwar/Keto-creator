@@ -3,6 +3,7 @@ from datetime import date
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete as sql_delete
 from app.models.meal import Meal, MealPlan, MealPlanSlot
+from app.models.shopping import ShoppingList, ShoppingItem
 from app.models.user import UserProfile
 import json
 
@@ -22,9 +23,16 @@ async def generate_week_plan(
     )
     existing_plan = existing.scalar_one_or_none()
     if existing_plan:
-        # Delete slots first (explicit cascade for async SQLAlchemy)
+        # Delete in FK-safe order:
+        # 1. Shopping items → shopping lists → meal plan slots → meal plan
+        shopping_lists = await db.execute(
+            select(ShoppingList).where(ShoppingList.meal_plan_id == existing_plan.id)
+        )
+        for sl in shopping_lists.scalars().all():
+            await db.execute(sql_delete(ShoppingItem).where(ShoppingItem.shopping_list_id == sl.id))
+        await db.execute(sql_delete(ShoppingList).where(ShoppingList.meal_plan_id == existing_plan.id))
         await db.execute(sql_delete(MealPlanSlot).where(MealPlanSlot.meal_plan_id == existing_plan.id))
-        await db.delete(existing_plan)
+        await db.execute(sql_delete(MealPlan).where(MealPlan.id == existing_plan.id))
         await db.flush()
 
     allergies = json.loads(profile.allergies or "[]")
