@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, RefreshCw, X, Flame, ChefHat, Users, CheckCircle2 } from "lucide-react";
+import { Clock, RefreshCw, X, Flame, ChefHat, Users, CheckCircle2, AlertTriangle } from "lucide-react";
 import api from "@/lib/api";
 import { getWeekStart, formatDate, DAY_NAMES, MEAL_TYPES } from "@/lib/utils";
 
@@ -185,9 +185,16 @@ function SwapModal({ slot, planId, onClose, onSwapped }: any) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get(`/meals?meal_type=${slot.meal.meal_type}&limit=6`).then((r) => {
-      setSuggestions(r.data.items.filter((m: any) => m.id !== slot.meal.id).slice(0, 4));
+    // Use alternatives endpoint — already filtered by user allergies + diet
+    api.get(`/meals/${slot.meal.id}/alternatives`).then((r) => {
+      setSuggestions(r.data);
       setLoading(false);
+    }).catch(() => {
+      // Fallback to generic search
+      api.get(`/meals?meal_type=${slot.meal.meal_type}&limit=6`).then((r) => {
+        setSuggestions(r.data.items.filter((m: any) => m.id !== slot.meal.id).slice(0, 4));
+        setLoading(false);
+      });
     });
   }, [slot]);
 
@@ -244,14 +251,18 @@ function SwapModal({ slot, planId, onClose, onSwapped }: any) {
 }
 
 // ─── Meal Card ────────────────────────────────────────────────────────────────
-function MealCard({ slot, onSwap, onEaten, onRecipe }: {
+function MealCard({ slot, onSwap, onEaten, onRecipe, userAllergies }: {
   slot: any;
   onSwap: (slot: any) => void;
   onEaten: (slot: any) => void;
   onRecipe: (meal: any) => void;
+  userAllergies: string[];
 }) {
   const meal = slot?.meal;
   if (!meal) return null;
+
+  const mealAllergens: string[] = Array.isArray(meal.allergens) ? meal.allergens : [];
+  const hasAllergen = userAllergies.some((a) => mealAllergens.includes(a));
 
   return (
     <motion.div
@@ -282,6 +293,21 @@ function MealCard({ slot, onSwap, onEaten, onRecipe }: {
           </span>
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+
+        {/* Allergen warning */}
+        {hasAllergen && (
+          <div className="absolute top-2 left-8 z-10">
+            <button
+              onClick={(e) => { e.stopPropagation(); onSwap(slot); }}
+              title="Contains your allergens — click to swap"
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm"
+              style={{ background: "#FEF3C7", color: "#D97706", border: "1px solid #FDE68A" }}
+            >
+              <AlertTriangle className="w-2.5 h-2.5" />
+              Allergen
+            </button>
+          </div>
+        )}
 
         {/* Swap button */}
         <div className="absolute top-2 right-2">
@@ -350,6 +376,7 @@ function MealCard({ slot, onSwap, onEaten, onRecipe }: {
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function MealPlanPage() {
   const [weekPlan, setWeekPlan] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [generateError, setGenerateError] = useState("");
@@ -361,11 +388,19 @@ export default function MealPlanPage() {
 
   const loadPlan = async () => {
     try {
-      const res = await api.get(`/meal-plans?week_start=${weekStart}`);
-      setWeekPlan(res.data);
+      const [planRes, profileRes] = await Promise.all([
+        api.get(`/meal-plans?week_start=${weekStart}`).catch(() => null),
+        api.get("/users/profile").catch(() => null),
+      ]);
+      if (planRes) setWeekPlan(planRes.data);
+      if (profileRes) setProfile(profileRes.data);
     } catch { /* no plan */ }
     setLoading(false);
   };
+
+  const userAllergies: string[] = (() => {
+    try { return JSON.parse(profile?.allergies || "[]"); } catch { return []; }
+  })();
 
   const generate = async () => {
     setGenerating(true);
@@ -481,6 +516,7 @@ export default function MealPlanPage() {
                         onSwap={() => setSwapSlot(slot)}
                         onEaten={markEaten}
                         onRecipe={(meal) => setRecipeMeal(meal)}
+                        userAllergies={userAllergies}
                       />
                     );
                   })}

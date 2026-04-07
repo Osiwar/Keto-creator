@@ -1,10 +1,11 @@
 import json
+import random
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
 from app.models.meal import Meal
-from app.models.user import User
+from app.models.user import User, UserProfile
 from app.middleware.auth_middleware import get_current_user
 
 router = APIRouter(prefix="/meals", tags=["meals"])
@@ -67,3 +68,37 @@ async def get_meal(meal_id: int, db: AsyncSession = Depends(get_db)):
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Meal not found")
     return meal_to_dict(meal)
+
+
+@router.get("/{meal_id}/alternatives")
+async def get_alternatives(
+    meal_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Return up to 4 alternative meals of the same type, compatible with user profile (no allergens)."""
+    from fastapi import HTTPException
+
+    meal_result = await db.execute(select(Meal).where(Meal.id == meal_id))
+    meal = meal_result.scalar_one_or_none()
+    if not meal:
+        raise HTTPException(status_code=404, detail="Meal not found")
+
+    profile_result = await db.execute(select(UserProfile).where(UserProfile.user_id == current_user.id))
+    profile = profile_result.scalar_one_or_none()
+
+    user_allergies = json.loads(profile.allergies or "[]") if profile else []
+    diet_type = profile.diet_type or "keto" if profile else "keto"
+
+    all_result = await db.execute(select(Meal))
+    all_meals = all_result.scalars().all()
+
+    alternatives = [
+        m for m in all_meals
+        if m.id != meal_id
+        and m.meal_type == meal.meal_type
+        and m.diet_type in ["both", diet_type]
+        and not any(a in json.loads(m.allergens or "[]") for a in user_allergies)
+    ]
+    random.shuffle(alternatives)
+    return [meal_to_dict(m) for m in alternatives[:4]]
