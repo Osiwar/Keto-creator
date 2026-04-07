@@ -42,11 +42,13 @@ async def chat(
         session = result.scalar_one_or_none()
         if not session:
             raise HTTPException(status_code=404, detail="Session not found")
+        # Build history from existing messages (already eagerly loaded above)
+        history = [{"role": m.role, "content": m.content} for m in session.messages]
     else:
         session = ChatSession(user_id=current_user.id, title=data.message[:50])
         db.add(session)
         await db.flush()
-        session.messages = []
+        history = []  # New session — no prior messages, avoids lazy-load on async session
 
     # Get profile
     profile_result = await db.execute(
@@ -54,8 +56,7 @@ async def chat(
     )
     profile = profile_result.scalar_one_or_none()
 
-    # Build message history
-    history = [{"role": m.role, "content": m.content} for m in session.messages]
+    # Append current user message to history
     history.append({"role": "user", "content": data.message})
 
     # Save user message
