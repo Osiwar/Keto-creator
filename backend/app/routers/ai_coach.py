@@ -1,4 +1,5 @@
 import json
+import asyncio
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,11 +7,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from pydantic import BaseModel
 from typing import Optional
-from app.database import get_db
+from app.database import get_db, AsyncSessionLocal
 from app.models.user import User, UserProfile
 from app.models.chat import ChatSession, ChatMessage
 from app.middleware.auth_middleware import get_current_user
 from app.services.ai_service import stream_chat
+from app.config import settings
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 
@@ -26,6 +28,10 @@ async def chat(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    # Check API key is configured
+    if not settings.ANTHROPIC_API_KEY:
+        raise HTTPException(status_code=503, detail="Anthropic API key not configured")
+
     # Get or create session
     if data.session_id:
         result = await db.execute(
@@ -43,7 +49,9 @@ async def chat(
         session.messages = []
 
     # Get profile
-    profile_result = await db.execute(select(UserProfile).where(UserProfile.user_id == current_user.id))
+    profile_result = await db.execute(
+        select(UserProfile).where(UserProfile.user_id == current_user.id)
+    )
     profile = profile_result.scalar_one_or_none()
 
     # Build message history
@@ -55,29 +63,30 @@ async def chat(
     db.add(user_msg)
     await db.commit()
 
+    session_id = session.id
+
     async def generate():
         full_response = ""
-        session_id_str = str(session.id)
-        yield f"data: {{\"session_id\": {session.id}}}\n\n"
+        yield f"data: {{\"session_id\": {session_id}}}\n\n"
 
-        async for chunk in stream_chat(history, profile):
-            full_response += chunk
-            escaped = chunk.replace('"', '\\"').replace('\n', '\\n')
-            yield f"data: {{\"delta\": \"{escaped}\"}}\n\n"
+        try:
+            async for chunk in stream_chat(history, profile):
+                full_response += chunk
+                escaped = chunk.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+                yield f"data: {{\"delta\": \"{escaped}\"}}\n\n"
+        except Exception as e:
+            error_msg = str(e)[:200]
+            yield f"data: {{\"error\": \"{error_msg}\"}}\n\n"
+            yield "data: [DONE]\n\n"
+            return
 
-        # Save assistant response
-        async with db.__class__(db.bind) as save_db:
-            pass
+        yield "data: [DONE]\n\n"
 
-        yield f"data: [DONE]\n\n"
-
-        # Save assistant message (fire and forget pattern — save outside stream)
-        import asyncio
+        # Save assistant message asynchronously
         async def save_response():
-            from app.database import AsyncSessionLocal
             async with AsyncSessionLocal() as save_db:
                 assistant_msg = ChatMessage(
-                    session_id=session.id,
+                    session_id=session_id,
                     role="assistant",
                     content=full_response,
                 )
@@ -98,4 +107,7 @@ async def get_sessions(
         select(ChatSession).where(ChatSession.user_id == current_user.id)
     )
     sessions = result.scalars().all()
-    return [{"id": s.id, "title": s.title, "created_at": s.created_at.isoformat()} for s in sessions]
+    return [
+        {"id": s.id, "title": s.title, "created_at": s.created_at.isoformat()}
+        for s in sessions
+    ]
