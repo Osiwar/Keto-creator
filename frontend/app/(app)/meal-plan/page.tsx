@@ -45,8 +45,21 @@ function RecipeModal({ meal, onClose }: { meal: any; onClose: () => void }) {
       >
         {/* Hero image */}
         {meal.image_url && (
-          <div className="relative h-52 overflow-hidden rounded-t-3xl">
-            <img src={meal.image_url} alt={meal.name} className="w-full h-full object-cover" />
+          <div className="relative h-52 overflow-hidden rounded-t-3xl" style={{ background: "linear-gradient(135deg, #f5ede0, #e8d5c0)" }}>
+            <img
+              src={meal.image_url}
+              alt={meal.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+            {/* Emoji fallback */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <span className="text-6xl opacity-30">
+                {meal.meal_type === "breakfast" ? "🍳" : meal.meal_type === "lunch" ? "🥗" : "🍖"}
+              </span>
+            </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute bottom-4 left-5 right-5">
               <span
@@ -253,14 +266,21 @@ function MealCard({ slot, onSwap, onEaten, onRecipe }: {
       onClick={() => onRecipe(meal)}
     >
       {/* Image */}
-      <div className="relative h-28 overflow-hidden" style={{ background: "var(--bg-alt)" }}>
+      <div className="relative h-28 overflow-hidden" style={{ background: "linear-gradient(135deg, #f5ede0, #e8d5c0)" }}>
         {meal.image_url && (
           <img
             src={meal.image_url}
             alt={meal.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
           />
         )}
+        {/* Emoji fallback shown when no image or image fails */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-4xl opacity-40">
+            {meal.meal_type === "breakfast" ? "🍳" : meal.meal_type === "lunch" ? "🥗" : "🍖"}
+          </span>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
 
         {/* Swap button */}

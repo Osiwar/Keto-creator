@@ -35,7 +35,7 @@ MEALS_SEED = [
     {
         "name": "Keto Avocado Eggs",
         "description": "Baked eggs inside creamy avocado halves with a sprinkle of paprika.",
-        "image_url": "https://images.unsplash.com/photo-1510629954389-91f4878c6b98?w=800",
+        "image_url": "https://images.unsplash.com/photo-1541519227354-08fa5d50c820?w=800",
         "diet_type": "keto",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -157,7 +157,7 @@ MEALS_SEED = [
     {
         "name": "Ribeye Steak Salad",
         "description": "Sliced ribeye over arugula with parmesan shavings and olive oil dressing.",
-        "image_url": "https://images.unsplash.com/photo-1547592180-85f173990554?w=800",
+        "image_url": "https://images.unsplash.com/photo-1598103442097-8b74394b95c7?w=800",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 10,
@@ -279,7 +279,7 @@ MEALS_SEED = [
     {
         "name": "Bone Broth Beef Stew",
         "description": "Rich beef stew cooked in bone broth with carrots and celery.",
-        "image_url": "https://images.unsplash.com/photo-1547592180-85f173990554?w=800",
+        "image_url": "https://images.unsplash.com/photo-1598103442097-8b74394b95c7?w=800",
         "diet_type": "carnivore",
         "meal_type": "lunch",
         "prep_time_mins": 15,
