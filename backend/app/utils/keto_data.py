@@ -5,7 +5,7 @@ MEALS_SEED = [
     {
         "name": "Bacon & Egg Bowl",
         "description": "Crispy bacon strips with fried eggs and melted cheese — the ultimate carnivore breakfast.",
-        "image_url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800",
+        "image_url": "https://images.unsplash.com/photo-1484723091739-30990b44cf0c?w=800",
         "diet_type": "both",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -65,7 +65,7 @@ MEALS_SEED = [
     {
         "name": "Steak & Eggs",
         "description": "Ribeye steak cooked to perfection paired with sunny-side eggs.",
-        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800",
+        "image_url": "https://images.unsplash.com/photo-1432139509613-5c4255815697?w=800",
         "diet_type": "both",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -96,7 +96,7 @@ MEALS_SEED = [
     {
         "name": "Keto Smoothie Bowl",
         "description": "Thick coconut cream smoothie topped with berries, seeds and nuts.",
-        "image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800",
+        "image_url": "https://images.unsplash.com/photo-1493770348161-369560ae357d?w=800",
         "diet_type": "keto",
         "meal_type": "breakfast",
         "prep_time_mins": 10,
@@ -157,7 +157,7 @@ MEALS_SEED = [
     {
         "name": "Ribeye Steak Salad",
         "description": "Sliced ribeye over arugula with parmesan shavings and olive oil dressing.",
-        "image_url": "https://images.unsplash.com/photo-1598103442097-8b74394b95c7?w=800",
+        "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 10,
@@ -187,7 +187,7 @@ MEALS_SEED = [
     {
         "name": "Ground Beef Bowl",
         "description": "Seasoned ground beef with butter-sautéed mushrooms and a fried egg on top.",
-        "image_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
+        "image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
         "diet_type": "both",
         "meal_type": "lunch",
         "prep_time_mins": 5,
@@ -218,7 +218,7 @@ MEALS_SEED = [
     {
         "name": "Chicken Thigh & Avocado Plate",
         "description": "Crispy skin chicken thighs with sliced avocado and a herb butter sauce.",
-        "image_url": "https://images.unsplash.com/photo-1598103442097-8b74394b95c7?w=800",
+        "image_url": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 5,
@@ -249,7 +249,7 @@ MEALS_SEED = [
     {
         "name": "Tuna Lettuce Wraps",
         "description": "Wild tuna mixed with mayo and celery, wrapped in butter lettuce.",
-        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800",
+        "image_url": "https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?w=800",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 10,
@@ -279,7 +279,7 @@ MEALS_SEED = [
     {
         "name": "Bone Broth Beef Stew",
         "description": "Rich beef stew cooked in bone broth with carrots and celery.",
-        "image_url": "https://images.unsplash.com/photo-1598103442097-8b74394b95c7?w=800",
+        "image_url": "https://images.unsplash.com/photo-1574484284002-952d92456975?w=800",
         "diet_type": "carnivore",
         "meal_type": "lunch",
         "prep_time_mins": 15,
@@ -436,7 +436,7 @@ MEALS_SEED = [
     {
         "name": "Lamb Chops with Rosemary",
         "description": "Grilled lamb chops marinated in garlic and rosemary.",
-        "image_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
+        "image_url": "https://images.unsplash.com/photo-1611599537845-1c7aca0091c0?w=800",
         "diet_type": "both",
         "meal_type": "dinner",
         "prep_time_mins": 10,
@@ -621,7 +621,7 @@ MEALS_SEED = [
     {
         "name": "Hard Boiled Eggs & Bacon",
         "description": "Simple portable snack: hard-boiled eggs wrapped in crispy bacon.",
-        "image_url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800",
+        "image_url": "https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=800",
         "diet_type": "both",
         "meal_type": "snack",
         "prep_time_mins": 2,
