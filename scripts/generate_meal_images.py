@@ -17,7 +17,7 @@ from openai import OpenAI
 # ⚙️  CONFIG — Remplis ces deux lignes
 # ─────────────────────────────────────────────
 OPENAI_API_KEY = "sk-..."          # Ta clé OpenAI
-VERCEL_URL     = "https://ton-app.vercel.app"  # Ex: https://keto-creator.vercel.app
+VERCEL_URL     = "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app"  # Ex: https://keto-creator.vercel.app
 # ─────────────────────────────────────────────
 
 OUTPUT_DIR = Path(__file__).parent.parent / "frontend" / "public" / "meals"
@@ -239,7 +239,7 @@ def generate_and_save():
     url_map = {}  # slug → final URL
     total = len(MEALS)
 
-    print(f"\n🚀 Génération de {total} images avec DALL-E 3...\n")
+    print(f"\n>> Generation de {total} images avec DALL-E 3...\n")
 
     for i, meal in enumerate(MEALS, 1):
         slug     = meal["slug"]
@@ -249,11 +249,11 @@ def generate_and_save():
 
         # Skip if already generated
         if filepath.exists():
-            print(f"  ⏭️  [{i}/{total}] {meal['name']} — déjà généré, skip")
+            print(f"  [SKIP] [{i}/{total}] {meal['name']} - deja genere")
             url_map[meal["name"]] = final_url
             continue
 
-        print(f"  🎨 [{i}/{total}] {meal['name']}...", end=" ", flush=True)
+        print(f"  [GEN]  [{i}/{total}] {meal['name']}...", end=" ", flush=True)
 
         try:
             response = client.images.generate(
@@ -273,10 +273,10 @@ def generate_and_save():
                 f.write(img_response.content)
 
             url_map[meal["name"]] = final_url
-            print(f"✅ sauvegardé → {filename}")
+            print(f"OK -> {filename}")
 
         except Exception as e:
-            print(f"❌ ERREUR: {e}")
+            print(f"ERREUR: {e}")
             url_map[meal["name"]] = None
 
         # Respect rate limit (5 images/min on DALL-E 3)
@@ -287,7 +287,7 @@ def generate_and_save():
 
 
 def update_keto_data(url_map: dict):
-    print("\n📝 Mise à jour de keto_data.py...")
+    print("\n>> Mise a jour de keto_data.py...")
     content = KETO_DATA.read_text(encoding="utf-8")
 
     updated = 0
@@ -296,8 +296,6 @@ def update_keto_data(url_map: dict):
         if not new_url:
             continue
 
-        # Replace any existing image_url for this meal block
-        # We match the name then replace the next image_url line
         pattern = (
             r'("name":\s*"' + re.escape(meal["name"]) + r'".*?'
             r'"image_url":\s*")[^"]+(")'
@@ -309,31 +307,31 @@ def update_keto_data(url_map: dict):
             updated += 1
 
     KETO_DATA.write_text(content, encoding="utf-8")
-    print(f"  ✅ {updated} URLs mises à jour dans keto_data.py")
+    print(f"  OK: {updated} URLs mises a jour dans keto_data.py")
 
 
 def main():
     if OPENAI_API_KEY.startswith("sk-..."):
-        print("❌ Remplis OPENAI_API_KEY dans le script !")
+        print("ERREUR: Remplis OPENAI_API_KEY dans le script !")
         return
     if "ton-app" in VERCEL_URL:
-        print("❌ Remplis VERCEL_URL dans le script !")
+        print("ERREUR: Remplis VERCEL_URL dans le script !")
         return
 
     url_map = generate_and_save()
 
     successful = sum(1 for v in url_map.values() if v)
-    print(f"\n✅ {successful}/{len(MEALS)} images générées dans frontend/public/meals/")
+    print(f"\nOK: {successful}/{len(MEALS)} images generees dans frontend/public/meals/")
 
     update_keto_data(url_map)
 
     print("\n" + "="*55)
-    print("🎉 Terminé ! Prochaines étapes :")
+    print("TERMINE ! Prochaines etapes :")
     print("  1. git add frontend/public/meals/ backend/app/utils/keto_data.py")
     print("  2. git commit -m 'feat: add AI-generated meal images'")
     print("  3. git push")
-    print("  → Vercel redéploie automatiquement avec les nouvelles images")
-    print("  → Railway met à jour la DB au prochain démarrage")
+    print("  -> Vercel redéploie avec les nouvelles images")
+    print("  -> Railway met a jour la DB au redemarrage")
     print("="*55 + "\n")
 
 
