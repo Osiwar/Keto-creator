@@ -142,43 +142,100 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="rounded-3xl p-6 mb-6 overflow-x-auto shadow-sm"
+            className="rounded-3xl p-6 mb-6 shadow-sm"
             style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
           >
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold" style={{ color: "var(--text)" }}>This Week</h2>
               <Link href="/meal-plan">
                 <button className="text-sm font-medium" style={{ color: "var(--accent)" }}>View full plan →</button>
               </Link>
             </div>
-            <div className="grid grid-cols-7 gap-2 min-w-[560px]">
+            <div className="grid grid-cols-7 gap-2 overflow-x-auto min-w-0">
               {DAY_NAMES.map((day, i) => {
                 const dayMeals = weekPlan.days?.[i] || [];
                 const isToday = i === todayIndex;
+                const dayKcal = dayMeals.reduce((sum: number, s: any) => sum + (s.meal?.calories || 0), 0);
+                const kcalPct = Math.min((dayKcal / targets.calories) * 100, 100);
+                const eatenCount = dayMeals.filter((s: any) => s.is_eaten).length;
+                const MEAL_COLORS = ["#E8620A", "#10B981", "#8B5CF6"];
+                const MEAL_EMOJIS = ["🌅", "☀️", "🌙"];
+
                 return (
-                  <div
+                  <motion.div
                     key={day}
-                    className="rounded-xl p-3"
+                    whileHover={{ y: -2 }}
+                    className="rounded-2xl p-3 flex flex-col gap-2 cursor-default"
                     style={{
                       background: isToday ? "var(--accent-light)" : "var(--bg-alt)",
-                      border: isToday ? "1px solid var(--accent)" : "1px solid var(--border)",
+                      border: isToday ? "2px solid var(--accent)" : "1px solid var(--border)",
+                      boxShadow: isToday ? "0 4px 16px rgba(232,98,10,0.12)" : "none",
                     }}
                   >
-                    <p className="text-xs font-bold mb-2 text-center" style={{ color: isToday ? "var(--accent)" : "var(--text-muted)" }}>{day}</p>
-                    <div className="space-y-1">
-                      {dayMeals.slice(0, 3).map((slot: any) => (
-                        <div
-                          key={slot.id}
-                          className="w-full h-1.5 rounded-full"
-                          style={{ background: slot.is_eaten ? "var(--accent)" : "var(--border)" }}
-                          title={slot.meal?.name}
-                        />
-                      ))}
+                    {/* Day label */}
+                    <div className="text-center">
+                      <p className="text-xs font-extrabold uppercase tracking-wide" style={{ color: isToday ? "var(--accent)" : "var(--text-muted)" }}>
+                        {day}
+                      </p>
+                      {isToday && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white mt-0.5 inline-block" style={{ background: "var(--accent)" }}>
+                          Today
+                        </span>
+                      )}
                     </div>
-                    <p className="text-xs text-center mt-2" style={{ color: "var(--text-muted)" }}>
-                      {dayMeals.reduce((sum: number, s: any) => sum + (s.meal?.calories || 0), 0)} kcal
-                    </p>
-                  </div>
+
+                    {/* Meal type dots */}
+                    <div className="flex flex-col gap-1">
+                      {dayMeals.slice(0, 3).map((slot: any, mi: number) => (
+                        <div key={slot.id} className="flex items-center gap-1.5" title={slot.meal?.name}>
+                          <span className="text-[10px]">{MEAL_EMOJIS[mi]}</span>
+                          <div
+                            className="flex-1 h-1.5 rounded-full transition-all"
+                            style={{
+                              background: slot.is_eaten
+                                ? MEAL_COLORS[mi]
+                                : `${MEAL_COLORS[mi]}30`,
+                            }}
+                          />
+                        </div>
+                      ))}
+                      {dayMeals.length === 0 && (
+                        <div className="flex flex-col gap-1">
+                          {[0, 1, 2].map((mi) => (
+                            <div key={mi} className="flex items-center gap-1.5">
+                              <span className="text-[10px] opacity-30">{MEAL_EMOJIS[mi]}</span>
+                              <div className="flex-1 h-1.5 rounded-full" style={{ background: "var(--border)" }} />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Calorie progress bar */}
+                    <div>
+                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ background: isToday ? "var(--accent)" : "#10B981" }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${kcalPct}%` }}
+                          transition={{ duration: 0.8, delay: i * 0.05 }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-center mt-1 font-medium" style={{ color: isToday ? "var(--accent)" : "var(--text-muted)" }}>
+                        {dayKcal > 0 ? `${dayKcal} kcal` : "—"}
+                      </p>
+                    </div>
+
+                    {/* Eaten badge */}
+                    {eatenCount > 0 && (
+                      <div className="text-center">
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(16,185,129,0.15)", color: "#059669" }}>
+                          {eatenCount}/{dayMeals.length} eaten
+                        </span>
+                      </div>
+                    )}
+                  </motion.div>
                 );
               })}
             </div>
