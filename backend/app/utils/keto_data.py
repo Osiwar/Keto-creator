@@ -5,7 +5,7 @@ MEALS_SEED = [
     {
         "name": "Bacon & Egg Bowl",
         "description": "Crispy bacon strips with fried eggs and melted cheese — the ultimate carnivore breakfast.",
-        "image_url": "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/bacon-egg-bowl.jpg",
         "diet_type": "both",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -35,7 +35,7 @@ MEALS_SEED = [
     {
         "name": "Keto Avocado Eggs",
         "description": "Baked eggs inside creamy avocado halves with a sprinkle of paprika.",
-        "image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/keto-avocado-eggs.jpg",
         "diet_type": "keto",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -65,7 +65,7 @@ MEALS_SEED = [
     {
         "name": "Steak & Eggs",
         "description": "Ribeye steak cooked to perfection paired with sunny-side eggs.",
-        "image_url": "https://images.unsplash.com/photo-1432139509613-5c4255815697?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/steak-and-eggs.jpg",
         "diet_type": "both",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -96,7 +96,7 @@ MEALS_SEED = [
     {
         "name": "Keto Smoothie Bowl",
         "description": "Thick coconut cream smoothie topped with berries, seeds and nuts.",
-        "image_url": "https://images.unsplash.com/photo-1493770348161-369560ae357d?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/keto-smoothie-bowl.jpg",
         "diet_type": "keto",
         "meal_type": "breakfast",
         "prep_time_mins": 10,
@@ -126,7 +126,7 @@ MEALS_SEED = [
     {
         "name": "Carnivore Sausage Scramble",
         "description": "Pork sausages scrambled with eggs and beef tallow.",
-        "image_url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/carnivore-sausage-scramble.jpg",
         "diet_type": "both",
         "meal_type": "breakfast",
         "prep_time_mins": 5,
@@ -157,7 +157,7 @@ MEALS_SEED = [
     {
         "name": "Ribeye Steak Salad",
         "description": "Sliced ribeye over arugula with parmesan shavings and olive oil dressing.",
-        "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/ribeye-steak-salad.jpg",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 10,
@@ -187,7 +187,7 @@ MEALS_SEED = [
     {
         "name": "Ground Beef Bowl",
         "description": "Seasoned ground beef with butter-sautéed mushrooms and a fried egg on top.",
-        "image_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/ground-beef-bowl.jpg",
         "diet_type": "both",
         "meal_type": "lunch",
         "prep_time_mins": 5,
@@ -218,7 +218,7 @@ MEALS_SEED = [
     {
         "name": "Chicken Thigh & Avocado Plate",
         "description": "Crispy skin chicken thighs with sliced avocado and a herb butter sauce.",
-        "image_url": "https://images.unsplash.com/photo-1598103442097-8b74394b95c2?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/chicken-thigh-avocado.jpg",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 5,
@@ -249,7 +249,7 @@ MEALS_SEED = [
     {
         "name": "Tuna Lettuce Wraps",
         "description": "Wild tuna mixed with mayo and celery, wrapped in butter lettuce.",
-        "image_url": "https://images.unsplash.com/photo-1546039907853-faef73aa6879?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/tuna-lettuce-wraps.jpg",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 10,
@@ -279,7 +279,7 @@ MEALS_SEED = [
     {
         "name": "Bone Broth Beef Stew",
         "description": "Rich beef stew cooked in bone broth with carrots and celery.",
-        "image_url": "https://images.unsplash.com/photo-1574484284002-952d92456975?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/bone-broth-beef-stew.jpg",
         "diet_type": "carnivore",
         "meal_type": "lunch",
         "prep_time_mins": 15,
@@ -310,7 +310,7 @@ MEALS_SEED = [
     {
         "name": "Salmon Avocado Bowl",
         "description": "Pan-seared salmon fillet over sliced avocado with lemon butter.",
-        "image_url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/salmon-avocado-bowl.jpg",
         "diet_type": "keto",
         "meal_type": "lunch",
         "prep_time_mins": 5,
@@ -343,7 +343,7 @@ MEALS_SEED = [
     {
         "name": "New York Strip with Herb Butter",
         "description": "Perfectly seared NY strip steak topped with garlic herb butter.",
-        "image_url": "https://images.unsplash.com/photo-1558030006-450675393462?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/ny-strip-herb-butter.jpg",
         "diet_type": "both",
         "meal_type": "dinner",
         "prep_time_mins": 10,
@@ -375,7 +375,7 @@ MEALS_SEED = [
     {
         "name": "Creamy Garlic Butter Shrimp",
         "description": "Jumbo shrimp in a rich garlic cream sauce with parmesan.",
-        "image_url": "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/creamy-garlic-shrimp.jpg",
         "diet_type": "keto",
         "meal_type": "dinner",
         "prep_time_mins": 10,
@@ -406,7 +406,7 @@ MEALS_SEED = [
     {
         "name": "Pork Belly Strips",
         "description": "Slow-roasted pork belly strips with crispy crackling.",
-        "image_url": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/pork-belly-strips.jpg",
         "diet_type": "both",
         "meal_type": "dinner",
         "prep_time_mins": 10,
@@ -436,7 +436,7 @@ MEALS_SEED = [
     {
         "name": "Lamb Chops with Rosemary",
         "description": "Grilled lamb chops marinated in garlic and rosemary.",
-        "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/lamb-chops-rosemary.jpg",
         "diet_type": "both",
         "meal_type": "dinner",
         "prep_time_mins": 10,
@@ -466,7 +466,7 @@ MEALS_SEED = [
     {
         "name": "Keto Zucchini Lasagna",
         "description": "Classic lasagna layers using thin zucchini slices instead of pasta.",
-        "image_url": "https://images.unsplash.com/photo-1484980972926-edee96e0960d?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/keto-zucchini-lasagna.jpg",
         "diet_type": "keto",
         "meal_type": "dinner",
         "prep_time_mins": 20,
@@ -498,7 +498,7 @@ MEALS_SEED = [
     {
         "name": "Butter Chicken (Keto)",
         "description": "Creamy tomato-spiced chicken thighs in a rich butter sauce.",
-        "image_url": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/butter-chicken-keto.jpg",
         "diet_type": "keto",
         "meal_type": "dinner",
         "prep_time_mins": 15,
@@ -530,7 +530,7 @@ MEALS_SEED = [
     {
         "name": "Organ Meat Patties",
         "description": "Nutritious beef liver and heart patties, carnivore staple.",
-        "image_url": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/organ-meat-patties.jpg",
         "diet_type": "carnivore",
         "meal_type": "dinner",
         "prep_time_mins": 15,
@@ -563,7 +563,7 @@ MEALS_SEED = [
     {
         "name": "Beef Jerky (Homemade)",
         "description": "Lean beef sliced thin and dried with simple spices. Zero carbs.",
-        "image_url": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/beef-jerky.jpg",
         "diet_type": "both",
         "meal_type": "snack",
         "prep_time_mins": 15,
@@ -593,7 +593,7 @@ MEALS_SEED = [
     {
         "name": "Cheese Crisps",
         "description": "Baked parmesan rounds that crisp up perfectly for keto snacking.",
-        "image_url": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a2d4?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/cheese-crisps.jpg",
         "diet_type": "keto",
         "meal_type": "snack",
         "prep_time_mins": 2,
@@ -621,7 +621,7 @@ MEALS_SEED = [
     {
         "name": "Hard Boiled Eggs & Bacon",
         "description": "Simple portable snack: hard-boiled eggs wrapped in crispy bacon.",
-        "image_url": "https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/hard-boiled-eggs-bacon.jpg",
         "diet_type": "both",
         "meal_type": "snack",
         "prep_time_mins": 2,
@@ -647,7 +647,7 @@ MEALS_SEED = [
     {
         "name": "Almond Butter Fat Bombs",
         "description": "Frozen keto fat bombs with almond butter and coconut oil.",
-        "image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+        "image_url": "https://keto-creator-l5tklvdty-osiwars-projects.vercel.app/meals/almond-butter-fat-bombs.jpg",
         "diet_type": "keto",
         "meal_type": "snack",
         "prep_time_mins": 10,
