@@ -27,7 +27,7 @@ const ACTIVITY_OPTIONS = [
   { value: "very_active", label: "Athlete", desc: "Daily intense training" },
 ];
 
-const ALLERGY_OPTIONS = ["dairy", "eggs", "fish", "shellfish", "tree-nuts", "peanuts"];
+const ALLERGY_OPTIONS = ["Dairy", "Eggs", "Fish", "Shellfish", "Tree-Nuts", "Peanuts"];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -53,7 +53,9 @@ export default function OnboardingPage() {
   const toggleAllergy = (a: string) => {
     setData((d) => ({
       ...d,
-      allergies: d.allergies.includes(a) ? d.allergies.filter((x) => x !== a) : [...d.allergies, a],
+      allergies: d.allergies.includes(a.toLowerCase())
+        ? d.allergies.filter((x) => x !== a.toLowerCase())
+        : [...d.allergies, a.toLowerCase()],
     }));
   };
 
@@ -74,22 +76,36 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12" style={{ background: "var(--bg-primary)" }}>
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.08) 0%, transparent 60%)" }} />
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
+      style={{ background: "var(--bg)" }}
+    >
+      {/* Subtle top glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(232,98,10,0.07) 0%, transparent 60%)" }}
+      />
 
       <div className="w-full max-w-lg relative z-10">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-8 justify-center">
-          <div className="w-8 h-8 rounded-lg bg-amber-gradient flex items-center justify-center">
-            <Flame className="w-4 h-4 text-black" fill="black" />
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: "var(--accent)" }}
+          >
+            <Flame className="w-5 h-5 text-white" fill="white" />
           </div>
-          <span className="font-bold text-white">KetoCoach</span>
+          <span className="font-bold text-xl" style={{ color: "var(--text)" }}>KetoCoach</span>
         </div>
 
         {/* Progress bar */}
         <div className="flex gap-1.5 mb-8">
           {[...Array(STEPS)].map((_, i) => (
-            <div key={i} className="flex-1 h-1 rounded-full overflow-hidden bg-white/10">
+            <div
+              key={i}
+              className="flex-1 h-1.5 rounded-full overflow-hidden"
+              style={{ background: "var(--border)" }}
+            >
               <motion.div
                 className="h-full rounded-full"
                 style={{ background: "var(--accent)" }}
@@ -114,24 +130,35 @@ export default function OnboardingPage() {
             >
               {/* Step 0 — Diet type */}
               {step === 0 && (
-                <div className="glass rounded-3xl p-8">
-                  <h2 className="text-2xl font-black text-white mb-2">Choose your diet</h2>
-                  <p className="text-gray-400 text-sm mb-6">This shapes every meal plan we create for you.</p>
+                <div
+                  className="rounded-3xl p-8 shadow-sm"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                >
+                  <h2 className="text-2xl font-black mb-2" style={{ color: "var(--text)" }}>
+                    Choose your diet
+                  </h2>
+                  <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
+                    This shapes every meal plan we create for you.
+                  </p>
                   <div className="space-y-3">
                     {DIET_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         onClick={() => setData({ ...data, diet_type: opt.value })}
-                        className={`w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left ${
-                          data.diet_type === opt.value
-                            ? "border-amber-500 bg-amber-500/10"
-                            : "border-white/10 bg-white/5 hover:border-white/20"
-                        }`}
+                        className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left"
+                        style={{
+                          border: data.diet_type === opt.value
+                            ? "2px solid var(--accent)"
+                            : "2px solid var(--border)",
+                          background: data.diet_type === opt.value
+                            ? "var(--accent-light)"
+                            : "var(--bg-alt)",
+                        }}
                       >
                         <span className="text-2xl">{opt.emoji}</span>
                         <div>
-                          <p className="font-semibold text-white">{opt.label}</p>
-                          <p className="text-sm text-gray-400">{opt.desc}</p>
+                          <p className="font-semibold" style={{ color: "var(--text)" }}>{opt.label}</p>
+                          <p className="text-sm" style={{ color: "var(--text-muted)" }}>{opt.desc}</p>
                         </div>
                       </button>
                     ))}
@@ -141,24 +168,35 @@ export default function OnboardingPage() {
 
               {/* Step 1 — Goal */}
               {step === 1 && (
-                <div className="glass rounded-3xl p-8">
-                  <h2 className="text-2xl font-black text-white mb-2">What's your goal?</h2>
-                  <p className="text-gray-400 text-sm mb-6">We'll calibrate your calories accordingly.</p>
+                <div
+                  className="rounded-3xl p-8 shadow-sm"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                >
+                  <h2 className="text-2xl font-black mb-2" style={{ color: "var(--text)" }}>
+                    What&apos;s your goal?
+                  </h2>
+                  <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
+                    We&apos;ll calibrate your calories accordingly.
+                  </p>
                   <div className="space-y-3">
                     {GOAL_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         onClick={() => setData({ ...data, goal: opt.value })}
-                        className={`w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left ${
-                          data.goal === opt.value
-                            ? "border-amber-500 bg-amber-500/10"
-                            : "border-white/10 bg-white/5 hover:border-white/20"
-                        }`}
+                        className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left"
+                        style={{
+                          border: data.goal === opt.value
+                            ? "2px solid var(--accent)"
+                            : "2px solid var(--border)",
+                          background: data.goal === opt.value
+                            ? "var(--accent-light)"
+                            : "var(--bg-alt)",
+                        }}
                       >
                         <span className="text-2xl">{opt.emoji}</span>
                         <div>
-                          <p className="font-semibold text-white">{opt.label}</p>
-                          <p className="text-sm text-gray-400">{opt.desc}</p>
+                          <p className="font-semibold" style={{ color: "var(--text)" }}>{opt.label}</p>
+                          <p className="text-sm" style={{ color: "var(--text-muted)" }}>{opt.desc}</p>
                         </div>
                       </button>
                     ))}
@@ -168,35 +206,119 @@ export default function OnboardingPage() {
 
               {/* Step 2 — Body metrics */}
               {step === 2 && (
-                <div className="glass rounded-3xl p-8">
-                  <h2 className="text-2xl font-black text-white mb-2">Your measurements</h2>
-                  <p className="text-gray-400 text-sm mb-6">Used to calculate your exact macro targets.</p>
+                <div
+                  className="rounded-3xl p-8 shadow-sm"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                >
+                  <h2 className="text-2xl font-black mb-2" style={{ color: "var(--text)" }}>
+                    Your measurements
+                  </h2>
+                  <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
+                    Used to calculate your exact macro targets.
+                  </p>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-xs text-gray-400 uppercase tracking-wider mb-1 block">Age</label>
-                        <input type="number" value={data.age} onChange={(e) => setData({ ...data, age: +e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-amber-500 focus:outline-none" />
+                        <label
+                          className="text-xs uppercase tracking-wider mb-1.5 block font-semibold"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Age
+                        </label>
+                        <input
+                          type="number"
+                          value={data.age}
+                          onChange={(e) => setData({ ...data, age: +e.target.value })}
+                          className="w-full rounded-xl px-4 py-3 focus:outline-none transition-colors"
+                          style={{
+                            background: "var(--bg-alt)",
+                            border: "1.5px solid var(--border)",
+                            color: "var(--text)",
+                          }}
+                        />
                       </div>
                       <div>
-                        <label className="text-xs text-gray-400 uppercase tracking-wider mb-1 block">Gender</label>
-                        <select value={data.gender} onChange={(e) => setData({ ...data, gender: e.target.value })} className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+                        <label
+                          className="text-xs uppercase tracking-wider mb-1.5 block font-semibold"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Gender
+                        </label>
+                        <select
+                          value={data.gender}
+                          onChange={(e) => setData({ ...data, gender: e.target.value })}
+                          className="w-full rounded-xl px-4 py-3 focus:outline-none transition-colors"
+                          style={{
+                            background: "var(--bg-alt)",
+                            border: "1.5px solid var(--border)",
+                            color: "var(--text)",
+                          }}
+                        >
                           <option value="male">Male</option>
                           <option value="female">Female</option>
                         </select>
                       </div>
                       <div>
-                        <label className="text-xs text-gray-400 uppercase tracking-wider mb-1 block">Weight (kg)</label>
-                        <input type="number" value={data.weight_kg} onChange={(e) => setData({ ...data, weight_kg: +e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-amber-500 focus:outline-none" />
+                        <label
+                          className="text-xs uppercase tracking-wider mb-1.5 block font-semibold"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Weight (kg)
+                        </label>
+                        <input
+                          type="number"
+                          value={data.weight_kg}
+                          onChange={(e) => setData({ ...data, weight_kg: +e.target.value })}
+                          className="w-full rounded-xl px-4 py-3 focus:outline-none transition-colors"
+                          style={{
+                            background: "var(--bg-alt)",
+                            border: "1.5px solid var(--border)",
+                            color: "var(--text)",
+                          }}
+                        />
                       </div>
                       <div>
-                        <label className="text-xs text-gray-400 uppercase tracking-wider mb-1 block">Height (cm)</label>
-                        <input type="number" value={data.height_cm} onChange={(e) => setData({ ...data, height_cm: +e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-amber-500 focus:outline-none" />
+                        <label
+                          className="text-xs uppercase tracking-wider mb-1.5 block font-semibold"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Height (cm)
+                        </label>
+                        <input
+                          type="number"
+                          value={data.height_cm}
+                          onChange={(e) => setData({ ...data, height_cm: +e.target.value })}
+                          className="w-full rounded-xl px-4 py-3 focus:outline-none transition-colors"
+                          style={{
+                            background: "var(--bg-alt)",
+                            border: "1.5px solid var(--border)",
+                            color: "var(--text)",
+                          }}
+                        />
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-400 uppercase tracking-wider mb-1 block">Activity Level</label>
-                      <select value={data.activity_level} onChange={(e) => setData({ ...data, activity_level: e.target.value })} className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
-                        {ACTIVITY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label} — {o.desc}</option>)}
+                      <label
+                        className="text-xs uppercase tracking-wider mb-1.5 block font-semibold"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        Activity Level
+                      </label>
+                      <select
+                        value={data.activity_level}
+                        onChange={(e) => setData({ ...data, activity_level: e.target.value })}
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none transition-colors"
+                        style={{
+                          background: "var(--bg-alt)",
+                          border: "1.5px solid var(--border)",
+                          color: "var(--text)",
+                        }}
+                      >
+                        {ACTIVITY_OPTIONS.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label} — {o.desc}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -205,13 +327,22 @@ export default function OnboardingPage() {
 
               {/* Step 3 — Budget */}
               {step === 3 && (
-                <div className="glass rounded-3xl p-8">
-                  <h2 className="text-2xl font-black text-white mb-2">Weekly food budget</h2>
-                  <p className="text-gray-400 text-sm mb-6">We'll prioritize affordable meals within your range.</p>
+                <div
+                  className="rounded-3xl p-8 shadow-sm"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                >
+                  <h2 className="text-2xl font-black mb-2" style={{ color: "var(--text)" }}>
+                    Weekly food budget
+                  </h2>
+                  <p className="text-sm mb-8" style={{ color: "var(--text-muted)" }}>
+                    We&apos;ll prioritize affordable meals within your range.
+                  </p>
                   <div className="space-y-6">
                     <div className="text-center">
-                      <span className="text-5xl font-black gradient-text">{data.weekly_budget}€</span>
-                      <p className="text-gray-500 text-sm mt-1">per week</p>
+                      <span className="text-6xl font-black" style={{ color: "var(--accent)" }}>
+                        {data.weekly_budget}€
+                      </span>
+                      <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>per week</p>
                     </div>
                     <input
                       type="range"
@@ -220,9 +351,9 @@ export default function OnboardingPage() {
                       step={10}
                       value={data.weekly_budget}
                       onChange={(e) => setData({ ...data, weekly_budget: +e.target.value })}
-                      className="w-full accent-amber-500"
+                      className="w-full accent-orange-500"
                     />
-                    <div className="flex justify-between text-sm text-gray-500">
+                    <div className="flex justify-between text-sm" style={{ color: "var(--text-muted)" }}>
                       <span>30€ budget</span>
                       <span>300€ premium</span>
                     </div>
@@ -232,25 +363,38 @@ export default function OnboardingPage() {
 
               {/* Step 4 — Allergies */}
               {step === 4 && (
-                <div className="glass rounded-3xl p-8">
-                  <h2 className="text-2xl font-black text-white mb-2">Any food allergies?</h2>
-                  <p className="text-gray-400 text-sm mb-6">We'll exclude these ingredients from all your meal plans.</p>
+                <div
+                  className="rounded-3xl p-8 shadow-sm"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                >
+                  <h2 className="text-2xl font-black mb-2" style={{ color: "var(--text)" }}>
+                    Any food allergies?
+                  </h2>
+                  <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
+                    We&apos;ll exclude these ingredients from all your meal plans.
+                  </p>
                   <div className="flex flex-wrap gap-3 mb-6">
-                    {ALLERGY_OPTIONS.map((a) => (
-                      <button
-                        key={a}
-                        onClick={() => toggleAllergy(a)}
-                        className={`px-4 py-2 rounded-xl border text-sm capitalize transition-all ${
-                          data.allergies.includes(a)
-                            ? "border-amber-500 bg-amber-500/20 text-amber-300"
-                            : "border-white/10 bg-white/5 text-gray-400 hover:border-white/20"
-                        }`}
-                      >
-                        {a}
-                      </button>
-                    ))}
+                    {ALLERGY_OPTIONS.map((a) => {
+                      const active = data.allergies.includes(a.toLowerCase());
+                      return (
+                        <button
+                          key={a}
+                          onClick={() => toggleAllergy(a)}
+                          className="px-4 py-2 rounded-xl text-sm capitalize font-medium transition-all"
+                          style={{
+                            border: active ? "2px solid var(--accent)" : "2px solid var(--border)",
+                            background: active ? "var(--accent-light)" : "var(--bg-alt)",
+                            color: active ? "var(--accent-dark)" : "var(--text-muted)",
+                          }}
+                        >
+                          {a}
+                        </button>
+                      );
+                    })}
                   </div>
-                  <p className="text-gray-500 text-xs">Tap to toggle. Leave empty if no allergies.</p>
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    Tap to toggle. Leave empty if no allergies.
+                  </p>
                 </div>
               )}
             </motion.div>
@@ -260,15 +404,26 @@ export default function OnboardingPage() {
         {/* Navigation */}
         <div className="flex items-center justify-between mt-6">
           {step > 0 ? (
-            <button onClick={back} className="btn-ghost flex items-center gap-2 py-3 px-5">
+            <button
+              onClick={back}
+              className="flex items-center gap-2 py-3 px-5 rounded-2xl font-semibold transition-all hover:opacity-80"
+              style={{
+                border: "1.5px solid var(--border)",
+                color: "var(--text-muted)",
+                background: "var(--surface)",
+              }}
+            >
               <ChevronLeft className="w-4 h-4" /> Back
             </button>
-          ) : <div />}
+          ) : (
+            <div />
+          )}
 
           {step < STEPS - 1 ? (
             <motion.button
               onClick={next}
-              className="btn-primary flex items-center gap-2 py-3 px-6"
+              className="flex items-center gap-2 py-3 px-6 rounded-2xl font-bold text-white shadow-md transition-all"
+              style={{ background: "var(--accent)" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -278,10 +433,15 @@ export default function OnboardingPage() {
             <motion.button
               onClick={submit}
               disabled={loading}
-              className="btn-primary flex items-center gap-2 py-3 px-6"
-              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-2 py-3 px-6 rounded-2xl font-bold text-white shadow-md"
+              style={{ background: "var(--accent)", opacity: loading ? 0.7 : 1 }}
+              whileHover={{ scale: loading ? 1 : 1.02 }}
             >
-              {loading ? <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Generate my plan →"}
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                "Generate my plan →"
+              )}
             </motion.button>
           )}
         </div>

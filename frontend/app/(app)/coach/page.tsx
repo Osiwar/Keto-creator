@@ -28,23 +28,35 @@ function MessageBubble({ message }: { message: Message }) {
       className={`flex gap-3 ${isUser ? "flex-row-reverse" : ""}`}
     >
       {!isUser && (
-        <div className="w-8 h-8 rounded-xl bg-amber-gradient flex items-center justify-center flex-shrink-0 mt-1">
-          <Flame className="w-4 h-4 text-black" fill="black" />
+        <div
+          className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-1"
+          style={{ background: "var(--accent)" }}
+        >
+          <Flame className="w-4 h-4 text-white" fill="white" />
         </div>
       )}
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-          isUser
-            ? "bg-amber-500/20 border border-amber-500/30 text-white rounded-tr-sm"
-            : "glass border border-white/10 text-gray-200 rounded-tl-sm"
-        }`}
+        className="max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed"
+        style={isUser ? {
+          background: "var(--accent-light)",
+          border: "1px solid var(--accent)",
+          color: "var(--accent-dark)",
+          borderTopRightRadius: "4px",
+        } : {
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          color: "var(--text)",
+          borderTopLeftRadius: "4px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        }}
       >
         {message.streaming && message.content === "" ? (
           <div className="flex gap-1 items-center py-1">
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="w-1.5 h-1.5 rounded-full bg-amber-400"
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: "var(--accent)" }}
                 animate={{ y: [0, -4, 0] }}
                 transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
               />
@@ -52,7 +64,6 @@ function MessageBubble({ message }: { message: Message }) {
           </div>
         ) : (
           <div
-            className="prose prose-invert prose-sm max-w-none"
             dangerouslySetInnerHTML={{
               __html: message.content
                 .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
@@ -89,7 +100,6 @@ export default function CoachPage() {
 
     setInput("");
     setLoading(true);
-
     setMessages((prev) => [...prev, { role: "user", content: msg }]);
     setMessages((prev) => [...prev, { role: "assistant", content: "", streaming: true }]);
 
@@ -97,15 +107,11 @@ export default function CoachPage() {
       const token = localStorage.getItem("keto_token");
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/chat`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ message: msg, session_id: sessionId }),
       });
 
       if (!res.body) return;
-
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let fullText = "";
@@ -113,10 +119,8 @@ export default function CoachPage() {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         const chunk = decoder.decode(value);
         const lines = chunk.split("\n").filter((l) => l.startsWith("data:"));
-
         for (const line of lines) {
           const data = line.slice(5).trim();
           if (data === "[DONE]") break;
@@ -140,7 +144,7 @@ export default function CoachPage() {
         updated[updated.length - 1] = { role: "assistant", content: fullText, streaming: false };
         return updated;
       });
-    } catch (err) {
+    } catch {
       setMessages((prev) => {
         const updated = [...prev];
         updated[updated.length - 1] = {
@@ -163,16 +167,22 @@ export default function CoachPage() {
   };
 
   return (
-    <div className="flex flex-col h-full max-h-screen">
+    <div className="flex flex-col h-full max-h-screen" style={{ background: "var(--bg)" }}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-white/6 flex items-center gap-3 flex-shrink-0">
-        <div className="w-10 h-10 rounded-xl bg-amber-gradient flex items-center justify-center">
-          <Flame className="w-5 h-5 text-black" fill="black" />
+      <div
+        className="px-6 py-4 flex items-center gap-3 flex-shrink-0"
+        style={{ background: "var(--surface)", borderBottom: "1px solid var(--border)" }}
+      >
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ background: "var(--accent)" }}
+        >
+          <Flame className="w-5 h-5 text-white" fill="white" />
         </div>
         <div>
-          <h1 className="font-bold text-white">KetoCoach AI</h1>
-          <p className="text-xs text-green-400 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 bg-green-400 rounded-full inline-block" /> Online
+          <h1 className="font-bold" style={{ color: "var(--text)" }}>KetoCoach AI</h1>
+          <p className="text-xs flex items-center gap-1" style={{ color: "#10B981" }}>
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" /> Online
           </p>
         </div>
       </div>
@@ -185,10 +195,10 @@ export default function CoachPage() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Suggested prompts (only when no user messages) */}
+      {/* Suggested prompts */}
       {messages.length <= 1 && (
         <div className="px-6 pb-3">
-          <p className="text-xs text-gray-600 mb-3 flex items-center gap-1">
+          <p className="text-xs mb-3 flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
             <Sparkles className="w-3 h-3" /> Try asking
           </p>
           <div className="flex flex-wrap gap-2">
@@ -196,7 +206,12 @@ export default function CoachPage() {
               <button
                 key={prompt}
                 onClick={() => sendMessage(prompt)}
-                className="text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"
+                className="text-xs px-3 py-1.5 rounded-full font-medium transition-all hover:opacity-80"
+                style={{
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-muted)",
+                }}
               >
                 {prompt}
               </button>
@@ -206,9 +221,12 @@ export default function CoachPage() {
       )}
 
       {/* Input */}
-      <div className="px-6 py-4 border-t border-white/6 flex-shrink-0">
+      <div
+        className="px-6 py-4 flex-shrink-0"
+        style={{ background: "var(--surface)", borderTop: "1px solid var(--border)" }}
+      >
         <div className="flex gap-3 items-end">
-          <div className="flex-1 relative">
+          <div className="flex-1">
             <textarea
               ref={inputRef}
               value={input}
@@ -216,8 +234,17 @@ export default function CoachPage() {
               onKeyDown={handleKey}
               placeholder="Ask your keto coach anything..."
               rows={1}
-              style={{ resize: "none" }}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 pr-12 text-white placeholder-gray-600 focus:border-amber-500 focus:outline-none transition-colors text-sm"
+              style={{
+                resize: "none",
+                background: "var(--bg-alt)",
+                border: "1.5px solid var(--border)",
+                color: "var(--text)",
+                borderRadius: "16px",
+                padding: "12px 16px",
+                width: "100%",
+                outline: "none",
+                fontSize: "14px",
+              }}
             />
           </div>
           <motion.button
@@ -225,15 +252,17 @@ export default function CoachPage() {
             disabled={!input.trim() || loading}
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all disabled:opacity-40"
             style={{
-              background: input.trim() && !loading ? "linear-gradient(135deg, #F59E0B, #D97706)" : "rgba(255,255,255,0.08)",
+              background: input.trim() && !loading ? "var(--accent)" : "var(--border)",
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Send className="w-4 h-4 text-black" />
+            <Send className="w-4 h-4 text-white" />
           </motion.button>
         </div>
-        <p className="text-xs text-gray-700 mt-2 text-center">Press Enter to send · Shift+Enter for new line</p>
+        <p className="text-xs mt-2 text-center" style={{ color: "var(--text-muted)" }}>
+          Press Enter to send · Shift+Enter for new line
+        </p>
       </div>
     </div>
   );

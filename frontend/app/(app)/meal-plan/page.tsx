@@ -1,10 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, RefreshCw, X, ChevronDown, ChevronUp, Flame } from "lucide-react";
+import { Clock, RefreshCw, X, Flame } from "lucide-react";
 import api from "@/lib/api";
 import { getWeekStart, formatDate, DAY_NAMES, MEAL_TYPES } from "@/lib/utils";
-import Image from "next/image";
 
 function MealCard({ slot, onSwap, onEaten }: { slot: any; onSwap: (slot: any) => void; onEaten: (slot: any) => void }) {
   const meal = slot?.meal;
@@ -13,30 +12,41 @@ function MealCard({ slot, onSwap, onEaten }: { slot: any; onSwap: (slot: any) =>
   return (
     <motion.div
       layout
-      className={`glass glass-hover rounded-2xl overflow-hidden group relative ${slot.is_eaten ? "opacity-60" : ""}`}
-      whileHover={{ y: -2 }}
+      className="rounded-2xl overflow-hidden group relative"
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
+        opacity: slot.is_eaten ? 0.65 : 1,
+      }}
+      whileHover={{ y: -2, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
     >
       {/* Image */}
-      <div className="relative h-28 overflow-hidden bg-white/5">
+      <div className="relative h-28 overflow-hidden" style={{ background: "var(--bg-alt)" }}>
         {meal.image_url && (
-          <img src={meal.image_url} alt={meal.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-105 transition-transform duration-500" />
+          <img
+            src={meal.image_url}
+            alt={meal.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute top-2 right-2 flex gap-1">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <div className="absolute top-2 right-2">
           <button
             onClick={() => onSwap(slot)}
-            className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-amber-500/80 transition-colors opacity-0 group-hover:opacity-100"
+            className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors opacity-0 group-hover:opacity-100 shadow-sm"
             title="Swap meal"
           >
-            <RefreshCw className="w-3 h-3" />
+            <RefreshCw className="w-3 h-3" style={{ color: "var(--accent)" }} />
           </button>
         </div>
         <div className="absolute bottom-2 left-2">
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-            meal.diet_type === "carnivore" ? "bg-red-500/20 text-red-300" :
-            meal.diet_type === "both" ? "bg-amber-500/20 text-amber-300" :
-            "bg-green-500/20 text-green-300"
-          }`}>
+          <span
+            className="text-xs px-2 py-0.5 rounded-full font-medium text-white"
+            style={{
+              background: meal.diet_type === "carnivore" ? "rgba(239,68,68,0.8)" :
+                meal.diet_type === "both" ? "rgba(232,98,10,0.8)" : "rgba(16,185,129,0.8)"
+            }}
+          >
             {meal.diet_type === "both" ? "keto" : meal.diet_type}
           </span>
         </div>
@@ -44,34 +54,32 @@ function MealCard({ slot, onSwap, onEaten }: { slot: any; onSwap: (slot: any) =>
 
       {/* Content */}
       <div className="p-3">
-        <p className="text-sm font-semibold text-white truncate mb-2">{meal.name}</p>
-        <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+        <p className="text-sm font-semibold truncate mb-2" style={{ color: "var(--text)" }}>{meal.name}</p>
+        <div className="flex items-center gap-3 text-xs mb-3" style={{ color: "var(--text-muted)" }}>
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {meal.prep_time_mins + meal.cook_time_mins}m
           </span>
-          <span className="font-medium" style={{ color: "#F59E0B" }}>{meal.calories} kcal</span>
+          <span className="font-semibold" style={{ color: "var(--accent)" }}>{meal.calories} kcal</span>
         </div>
-
-        {/* Macro pills */}
         <div className="flex gap-1">
-          <span className="text-xs px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300">F{meal.fat_g}g</span>
-          <span className="text-xs px-2 py-0.5 rounded-md bg-orange-500/15 text-orange-300">P{meal.protein_g}g</span>
-          <span className="text-xs px-2 py-0.5 rounded-md bg-red-500/15 text-red-300">C{meal.carbs_g}g</span>
+          <span className="text-xs px-2 py-0.5 rounded-md font-medium" style={{ background: "rgba(232,98,10,0.12)", color: "var(--accent-dark)" }}>F{meal.fat_g}g</span>
+          <span className="text-xs px-2 py-0.5 rounded-md font-medium" style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}>P{meal.protein_g}g</span>
+          <span className="text-xs px-2 py-0.5 rounded-md font-medium" style={{ background: "rgba(139,92,246,0.12)", color: "#7C3AED" }}>C{meal.carbs_g}g</span>
         </div>
       </div>
 
       {/* Eaten toggle */}
       <button
         onClick={() => onEaten(slot)}
-        className="absolute top-2 left-2 w-6 h-6 rounded-full border flex items-center justify-center transition-all"
+        className="absolute top-2 left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shadow-sm"
         style={{
-          borderColor: slot.is_eaten ? "#F59E0B" : "rgba(255,255,255,0.2)",
-          background: slot.is_eaten ? "#F59E0B" : "transparent",
+          borderColor: slot.is_eaten ? "var(--accent)" : "rgba(255,255,255,0.8)",
+          background: slot.is_eaten ? "var(--accent)" : "rgba(255,255,255,0.9)",
         }}
         title="Mark as eaten"
       >
-        {slot.is_eaten && <span className="text-black text-xs font-bold">✓</span>}
+        {slot.is_eaten && <span className="text-white text-xs font-bold">✓</span>}
       </button>
     </motion.div>
   );
@@ -96,21 +104,23 @@ function SwapModal({ slot, planId, onClose, onSwapped }: any) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass rounded-3xl p-6 w-full max-w-md relative z-10"
+        className="rounded-3xl p-6 w-full max-w-md relative z-10 shadow-2xl"
+        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-white text-lg">Swap meal</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <h3 className="font-bold text-lg" style={{ color: "var(--text)" }}>Swap meal</h3>
+          <button onClick={onClose} style={{ color: "var(--text-muted)" }}><X className="w-5 h-5" /></button>
         </div>
-        <p className="text-gray-400 text-sm mb-4">Replacing: <span className="text-amber-300">{slot.meal.name}</span></p>
-
+        <p className="text-sm mb-4" style={{ color: "var(--text-muted)" }}>
+          Replacing: <span style={{ color: "var(--accent)", fontWeight: 600 }}>{slot.meal.name}</span>
+        </p>
         {loading ? (
           <div className="flex justify-center py-8">
-            <div className="w-6 h-6 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: "var(--border)", borderTopColor: "var(--accent)" }} />
           </div>
         ) : (
           <div className="space-y-3">
@@ -118,15 +128,16 @@ function SwapModal({ slot, planId, onClose, onSwapped }: any) {
               <motion.button
                 key={meal.id}
                 onClick={() => swap(meal.id)}
-                className="w-full flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-amber-500/10 border border-white/10 hover:border-amber-500/30 transition-all text-left"
-                whileHover={{ scale: 1.01 }}
+                className="w-full flex items-center gap-4 p-3 rounded-xl transition-all text-left"
+                style={{ background: "var(--bg-alt)", border: "1px solid var(--border)" }}
+                whileHover={{ scale: 1.01, borderColor: "var(--accent)" }}
               >
                 {meal.image_url && (
                   <img src={meal.image_url} alt={meal.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
                 )}
                 <div>
-                  <p className="text-sm font-medium text-white">{meal.name}</p>
-                  <p className="text-xs text-gray-500">{meal.calories} kcal · F{meal.fat_g}g P{meal.protein_g}g C{meal.carbs_g}g</p>
+                  <p className="text-sm font-medium" style={{ color: "var(--text)" }}>{meal.name}</p>
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>{meal.calories} kcal · F{meal.fat_g}g P{meal.protein_g}g C{meal.carbs_g}g</p>
                 </div>
               </motion.button>
             ))}
@@ -170,7 +181,7 @@ export default function MealPlanPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: "var(--border)", borderTopColor: "var(--accent)" }} />
     </div>
   );
 
@@ -181,22 +192,33 @@ export default function MealPlanPage() {
     <div className="p-6 max-w-7xl mx-auto">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black text-white">Meal Plan</h1>
-          <p className="text-gray-400 mt-1">Week of {new Date(weekStart).toLocaleDateString("en", { month: "long", day: "numeric" })}</p>
+          <h1 className="text-3xl font-black" style={{ color: "var(--text)" }}>Meal Plan</h1>
+          <p className="mt-1" style={{ color: "var(--text-muted)" }}>
+            Week of {new Date(weekStart + "T12:00:00").toLocaleDateString("en", { month: "long", day: "numeric" })}
+          </p>
         </div>
         <motion.button
           onClick={generate}
           disabled={generating}
-          className="btn-primary flex items-center gap-2 py-2.5 px-5"
+          className="flex items-center gap-2 py-2.5 px-5 rounded-2xl font-bold text-white shadow-md"
+          style={{ background: "var(--accent)" }}
           whileHover={{ scale: 1.02 }}
         >
-          {generating ? <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <><Flame className="w-4 h-4" /> {weekPlan ? "Regenerate" : "Generate plan"}</>}
+          {generating
+            ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            : <><Flame className="w-4 h-4" /> {weekPlan ? "Regenerate" : "Generate plan"}</>
+          }
         </motion.button>
       </motion.div>
 
       {!weekPlan ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass rounded-3xl p-12 text-center">
-          <p className="text-gray-400 text-lg">No meal plan yet. Generate one above!</p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="rounded-3xl p-12 text-center shadow-sm"
+          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+        >
+          <p className="text-lg" style={{ color: "var(--text-muted)" }}>No meal plan yet. Generate one above!</p>
         </motion.div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
@@ -211,25 +233,34 @@ export default function MealPlanPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className={`rounded-2xl p-3 ${isToday ? "ring-1 ring-amber-500/30 bg-amber-500/5" : ""}`}
+                className="rounded-2xl p-3"
+                style={{
+                  background: isToday ? "var(--accent-light)" : "transparent",
+                  border: isToday ? "1.5px solid var(--accent)" : "1px solid transparent",
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <p className={`text-sm font-bold ${isToday ? "text-amber-400" : "text-gray-500"}`}>{day}</p>
-                  {isToday && <span className="text-xs bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-md">Today</span>}
+                  <p className="text-sm font-bold" style={{ color: isToday ? "var(--accent)" : "var(--text-muted)" }}>{day}</p>
+                  {isToday && (
+                    <span className="text-xs px-1.5 py-0.5 rounded-md font-medium text-white" style={{ background: "var(--accent)" }}>Today</span>
+                  )}
                 </div>
-                <p className="text-xs text-gray-600 mb-3">{dayCalories} kcal</p>
+                <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>{dayCalories} kcal</p>
 
                 <div className="space-y-3">
                   {MEAL_TYPES.map((mt) => {
                     const slot = slots.find((s: any) => s.meal_type === mt);
-                    if (!slot) return <div key={mt} className="h-24 rounded-xl bg-white/3 border border-dashed border-white/10 flex items-center justify-center"><p className="text-xs text-gray-700 capitalize">{mt}</p></div>;
+                    if (!slot) return (
+                      <div
+                        key={mt}
+                        className="h-24 rounded-xl border border-dashed flex items-center justify-center"
+                        style={{ borderColor: "var(--border)", background: "var(--bg-alt)" }}
+                      >
+                        <p className="text-xs capitalize" style={{ color: "var(--text-muted)" }}>{mt}</p>
+                      </div>
+                    );
                     return (
-                      <MealCard
-                        key={slot.id}
-                        slot={slot}
-                        onSwap={() => setSwapSlot(slot)}
-                        onEaten={markEaten}
-                      />
+                      <MealCard key={slot.id} slot={slot} onSwap={() => setSwapSlot(slot)} onEaten={markEaten} />
                     );
                   })}
                 </div>
@@ -241,12 +272,7 @@ export default function MealPlanPage() {
 
       <AnimatePresence>
         {swapSlot && weekPlan && (
-          <SwapModal
-            slot={swapSlot}
-            planId={weekPlan.id}
-            onClose={() => setSwapSlot(null)}
-            onSwapped={loadPlan}
-          />
+          <SwapModal slot={swapSlot} planId={weekPlan.id} onClose={() => setSwapSlot(null)} onSwapped={loadPlan} />
         )}
       </AnimatePresence>
     </div>
