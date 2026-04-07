@@ -135,6 +135,14 @@ export default function CoachPage() {
                 return updated;
               });
             }
+            if (parsed.error) {
+              fullText = `⚠️ Error: ${parsed.error}`;
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: "assistant", content: fullText, streaming: false };
+                return updated;
+              });
+            }
           } catch {}
         }
       }

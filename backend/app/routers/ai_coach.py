@@ -109,7 +109,7 @@ async def ai_health(current_user: User = Depends(get_current_user)):
     try:
         client = AsyncAnthropic(api_key=key)
         msg = await client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model="claude-3-haiku-20240307",
             max_tokens=10,
             messages=[{"role": "user", "content": "Say hi"}],
         )
