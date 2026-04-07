@@ -98,6 +98,25 @@ async def chat(
     return StreamingResponse(generate(), media_type="text/event-stream")
 
 
+@router.get("/health")
+async def ai_health(current_user: User = Depends(get_current_user)):
+    """Diagnostic: check Anthropic key + test a simple non-streaming call."""
+    from anthropic import AsyncAnthropic
+    key = settings.ANTHROPIC_API_KEY
+    if not key:
+        return {"status": "error", "reason": "ANTHROPIC_API_KEY not set"}
+    try:
+        client = AsyncAnthropic(api_key=key)
+        msg = await client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=10,
+            messages=[{"role": "user", "content": "Say hi"}],
+        )
+        return {"status": "ok", "key_prefix": key[:8] + "...", "response": msg.content[0].text}
+    except Exception as e:
+        return {"status": "error", "reason": str(e)[:300]}
+
+
 @router.get("/sessions")
 async def get_sessions(
     current_user: User = Depends(get_current_user),
