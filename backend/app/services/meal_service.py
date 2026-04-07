@@ -1,5 +1,5 @@
 import random
-from datetime import date, timedelta
+from datetime import date
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.meal import Meal, MealPlan, MealPlanSlot
@@ -29,12 +29,13 @@ async def generate_week_plan(
     diet_type = profile.diet_type or "keto"
     target_calories = profile.target_calories or 1800
 
-    # Fetch all meals matching diet
-    diet_filter = ["both", diet_type]
+    # Fetch all meals
     result = await db.execute(select(Meal))
     all_meals = result.scalars().all()
 
     # Filter by diet and allergies
+    diet_filter = ["both", diet_type]
+
     def is_compatible(meal: Meal) -> bool:
         if meal.diet_type not in diet_filter:
             return False
@@ -45,29 +46,50 @@ async def generate_week_plan(
 
     compatible = [m for m in all_meals if is_compatible(m)]
 
+    # Group by meal type and shuffle each group for variety
     by_type: dict[str, list[Meal]] = {}
     for mt in MEAL_TYPES_ORDER:
-        by_type[mt] = [m for m in compatible if m.meal_type == mt]
+        pool = [m for m in compatible if m.meal_type == mt]
+        random.shuffle(pool)
+        by_type[mt] = pool
 
     meal_plan = MealPlan(user_id=user_id, week_start=week_start)
     db.add(meal_plan)
     await db.flush()
 
+    target_per_meal = target_calories / len(MEAL_TYPES_ORDER)
+
     slots = []
+    # Track used meal IDs per type across the whole week for variety
+    used_per_type: dict[str, list[int]] = {mt: [] for mt in MEAL_TYPES_ORDER}
+
     for day in range(7):
         used_this_day: list[int] = []
-        day_calories = 0
 
         for sort_order, mt in enumerate(MEAL_TYPES_ORDER):
-            candidates = [m for m in by_type.get(mt, []) if m.id not in used_this_day]
-            if not candidates:
-                candidates = by_type.get(mt, [])
-            if not candidates:
+            pool = by_type.get(mt, [])
+            if not pool:
                 continue
 
-            # Pick meal closest to 1/3 of daily target
-            target_per_meal = target_calories / len(MEAL_TYPES_ORDER)
-            meal = min(candidates, key=lambda m: abs(m.calories - target_per_meal))
+            # Prefer meals not used this week, not used today
+            candidates = [
+                m for m in pool
+                if m.id not in used_per_type[mt] and m.id not in used_this_day
+            ]
+
+            # If all weekly meals exhausted for this type, reset (allows reuse after full cycle)
+            if not candidates:
+                used_per_type[mt] = []
+                candidates = [m for m in pool if m.id not in used_this_day]
+
+            # Fallback: any meal for this type
+            if not candidates:
+                candidates = pool
+
+            # Pick from top-3 closest to calorie target (adds variety while staying on-target)
+            candidates_sorted = sorted(candidates, key=lambda m: abs(m.calories - target_per_meal))
+            top_n = candidates_sorted[:3]
+            meal = random.choice(top_n)
 
             slot = MealPlanSlot(
                 meal_plan_id=meal_plan.id,
@@ -78,7 +100,7 @@ async def generate_week_plan(
             )
             slots.append(slot)
             used_this_day.append(meal.id)
-            day_calories += meal.calories
+            used_per_type[mt].append(meal.id)
 
     db.add_all(slots)
     await db.commit()
