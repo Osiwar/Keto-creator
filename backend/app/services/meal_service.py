@@ -1,7 +1,7 @@
 import random
 from datetime import date
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete as sql_delete
 from app.models.meal import Meal, MealPlan, MealPlanSlot
 from app.models.user import UserProfile
 import json
@@ -22,6 +22,8 @@ async def generate_week_plan(
     )
     existing_plan = existing.scalar_one_or_none()
     if existing_plan:
+        # Delete slots first (explicit cascade for async SQLAlchemy)
+        await db.execute(sql_delete(MealPlanSlot).where(MealPlanSlot.meal_plan_id == existing_plan.id))
         await db.delete(existing_plan)
         await db.flush()
 

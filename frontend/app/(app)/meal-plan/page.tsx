@@ -7,12 +7,24 @@ import { getWeekStart, formatDate, DAY_NAMES, MEAL_TYPES } from "@/lib/utils";
 
 // ─── Recipe Modal ────────────────────────────────────────────────────────────
 function RecipeModal({ meal, onClose }: { meal: any; onClose: () => void }) {
-  const ingredients: string[] = (() => {
-    try { return JSON.parse(meal.ingredients || "[]"); } catch { return []; }
-  })();
-  const instructions: string[] = (() => {
-    try { return JSON.parse(meal.instructions || "[]"); } catch { return []; }
-  })();
+  // meal.ingredients is already a parsed array from the API (meal_to_dict does json.loads)
+  const ingredients: any[] = Array.isArray(meal.ingredients)
+    ? meal.ingredients
+    : (() => { try { return JSON.parse(meal.ingredients || "[]"); } catch { return []; } })();
+
+  const instructions: any[] = Array.isArray(meal.instructions)
+    ? meal.instructions
+    : (() => { try { return JSON.parse(meal.instructions || "[]"); } catch { return []; } })();
+
+  // Format ingredient: can be string or {name, amount, unit} object
+  const formatIngredient = (ing: any): string => {
+    if (typeof ing === "string") return ing;
+    const parts = [];
+    if (ing.amount) parts.push(ing.amount);
+    if (ing.unit) parts.push(ing.unit);
+    if (ing.name) parts.push(ing.name);
+    return parts.join(" ");
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -105,15 +117,15 @@ function RecipeModal({ meal, onClose }: { meal: any; onClose: () => void }) {
                 Ingredients
               </h3>
               <ul className="space-y-2">
-                {ingredients.map((ing: string, i: number) => (
+                {ingredients.map((ing: any, i: number) => (
                   <li key={i} className="flex items-start gap-2.5 text-sm" style={{ color: "var(--text)" }}>
                     <span
                       className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-bold text-white"
                       style={{ background: "var(--accent)" }}
                     >
-                      {i + 1}
+                      ✓
                     </span>
-                    {ing}
+                    {formatIngredient(ing)}
                   </li>
                 ))}
               </ul>
@@ -320,6 +332,7 @@ export default function MealPlanPage() {
   const [weekPlan, setWeekPlan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState("");
   const [swapSlot, setSwapSlot] = useState<any>(null);
   const [recipeMeal, setRecipeMeal] = useState<any>(null);
   const weekStart = formatDate(getWeekStart());
@@ -336,10 +349,16 @@ export default function MealPlanPage() {
 
   const generate = async () => {
     setGenerating(true);
+    setGenerateError("");
     try {
       const res = await api.post("/meal-plans/generate", { week_start: weekStart });
       setWeekPlan(res.data);
-    } finally { setGenerating(false); }
+    } catch (e: any) {
+      const msg = e?.response?.data?.detail || "Generation failed. Please try again.";
+      setGenerateError(msg);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const markEaten = async (slot: any) => {
@@ -359,25 +378,32 @@ export default function MealPlanPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-black" style={{ color: "var(--text)" }}>Meal Plan</h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
-            Click any meal to see its recipe · Week of {new Date(weekStart + "T12:00:00").toLocaleDateString("en", { month: "long", day: "numeric" })}
-          </p>
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-black" style={{ color: "var(--text)" }}>Meal Plan</h1>
+            <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+              Click any meal to see its recipe · Week of {new Date(weekStart + "T12:00:00").toLocaleDateString("en", { month: "long", day: "numeric" })}
+            </p>
+          </div>
+          <motion.button
+            onClick={generate}
+            disabled={generating}
+            className="flex items-center gap-2 py-2.5 px-5 rounded-2xl font-bold text-white shadow-md"
+            style={{ background: "var(--accent)" }}
+            whileHover={{ scale: 1.02 }}
+          >
+            {generating
+              ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              : <><Flame className="w-4 h-4" /> {weekPlan ? "Regenerate" : "Generate plan"}</>
+            }
+          </motion.button>
         </div>
-        <motion.button
-          onClick={generate}
-          disabled={generating}
-          className="flex items-center gap-2 py-2.5 px-5 rounded-2xl font-bold text-white shadow-md"
-          style={{ background: "var(--accent)" }}
-          whileHover={{ scale: 1.02 }}
-        >
-          {generating
-            ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            : <><Flame className="w-4 h-4" /> {weekPlan ? "Regenerate" : "Generate plan"}</>
-          }
-        </motion.button>
+        {generateError && (
+          <div className="mt-3 text-sm px-4 py-2 rounded-xl" style={{ background: "rgba(239,68,68,0.1)", color: "#DC2626", border: "1px solid rgba(239,68,68,0.2)" }}>
+            ⚠️ {generateError}
+          </div>
+        )}
       </motion.div>
 
       {!weekPlan ? (
