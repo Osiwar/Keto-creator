@@ -11,17 +11,36 @@ async def seed_meals():
     from app.database import AsyncSessionLocal
     from app.models.meal import Meal
     from app.utils.keto_data import MEALS_SEED
+    import json
 
     async with AsyncSessionLocal() as db:
         result = await db.execute(select(Meal))
-        if result.scalars().first():
-            return  # Already seeded
+        existing = result.scalars().all()
+        existing_names = {m.name: m for m in existing}
 
+        added = 0
+        updated = 0
         for data in MEALS_SEED:
-            meal = Meal(**data)
-            db.add(meal)
+            if data["name"] in existing_names:
+                # Update ingredients and instructions if empty
+                meal = existing_names[data["name"]]
+                needs_update = False
+                if not meal.ingredients or meal.ingredients == "[]":
+                    meal.ingredients = data.get("ingredients", "[]")
+                    needs_update = True
+                if not meal.instructions or meal.instructions == "[]":
+                    meal.instructions = data.get("instructions", "[]")
+                    needs_update = True
+                if needs_update:
+                    updated += 1
+            else:
+                meal = Meal(**data)
+                db.add(meal)
+                added += 1
+
         await db.commit()
-        print(f"Seeded {len(MEALS_SEED)} meals")
+        if added or updated:
+            print(f"Seeds: {added} added, {updated} updated with recipes")
 
 
 @asynccontextmanager
