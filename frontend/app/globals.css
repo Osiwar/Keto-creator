@@ -167,3 +167,76 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Blog article prose styles */
+.prose-keto h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+.prose-keto h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+.prose-keto p {
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+  color: var(--text-muted);
+}
+.prose-keto ul, .prose-keto ol {
+  margin: 1rem 0 1.25rem 1.5rem;
+}
+.prose-keto li {
+  line-height: 1.75;
+  margin-bottom: 0.4rem;
+  color: var(--text-muted);
+}
+.prose-keto strong {
+  color: var(--text);
+  font-weight: 700;
+}
+.prose-keto a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.prose-keto table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+}
+.prose-keto th {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  font-weight: 700;
+  padding: 10px 16px;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+.prose-keto td {
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.prose-keto tr:nth-child(even) td {
+  background: var(--bg-alt);
+}
+.prose-keto code {
+  background: var(--bg-alt);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--accent-dark);
+  font-family: monospace;
+}
+.prose-keto hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}

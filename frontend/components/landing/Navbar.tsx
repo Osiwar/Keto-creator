@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "Calculator" },
   { href: "#pricing", label: "Pricing" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export default function Navbar() {
@@ -43,9 +44,15 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm font-medium transition-colors hover:text-orange-600" style={{ color: "var(--text-muted)" }}>
-              {l.label}
-            </a>
+            l.href.startsWith("/") ? (
+              <Link key={l.href} href={l.href} className="text-sm font-medium transition-colors hover:text-orange-600" style={{ color: "var(--text-muted)" }}>
+                {l.label}
+              </Link>
+            ) : (
+              <a key={l.href} href={l.href} className="text-sm font-medium transition-colors hover:text-orange-600" style={{ color: "var(--text-muted)" }}>
+                {l.label}
+              </a>
+            )
           ))}
         </div>
 
@@ -74,9 +81,15 @@ export default function Navbar() {
           style={{ background: "var(--bg)", borderColor: "var(--border-light)" }}
         >
           {NAV_LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="block py-3 text-sm font-medium" style={{ color: "var(--text-muted)" }} onClick={() => setMenuOpen(false)}>
-              {l.label}
-            </a>
+            l.href.startsWith("/") ? (
+              <Link key={l.href} href={l.href} className="block py-3 text-sm font-medium" style={{ color: "var(--text-muted)" }} onClick={() => setMenuOpen(false)}>
+                {l.label}
+              </Link>
+            ) : (
+              <a key={l.href} href={l.href} className="block py-3 text-sm font-medium" style={{ color: "var(--text-muted)" }} onClick={() => setMenuOpen(false)}>
+                {l.label}
+              </a>
+            )
           ))}
           <div className="flex gap-3 mt-4">
             <Link href="/login" className="flex-1"><button className="btn-ghost w-full text-sm py-2.5">Sign in</button></Link>
