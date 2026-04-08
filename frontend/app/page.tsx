@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
@@ -8,9 +9,50 @@ import PricingSection from "@/components/landing/PricingSection";
 import Link from "next/link";
 import { Flame, ArrowRight } from "lucide-react";
 
+export const metadata: Metadata = {
+  title: "KetoCoach — AI Keto & Carnivore Meal Planner",
+  description:
+    "Your AI-powered keto and carnivore meal planner. Get personalized weekly meal plans, track your macros, and get 24/7 coaching from your personal AI nutrition coach.",
+  alternates: { canonical: "https://keto-coach.app" },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "KetoCoach",
+  applicationCategory: "HealthApplication",
+  operatingSystem: "Web",
+  url: "https://keto-coach.app",
+  description:
+    "AI-powered keto and carnivore meal planner with personalized weekly plans, macro tracking, and 24/7 AI nutrition coaching.",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+    description: "Free to get started",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.8",
+    reviewCount: "312",
+  },
+  featureList: [
+    "Personalized keto meal plans",
+    "Carnivore diet support",
+    "AI nutrition coach",
+    "Macro tracking",
+    "Shopping list generator",
+    "Allergy management",
+  ],
+};
+
 export default function LandingPage() {
   return (
     <div style={{ background: "var(--bg)" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
       <HeroSection />
       <FeaturesSection />

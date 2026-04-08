@@ -1,0 +1,21 @@
+{
+  "name": "KetoCoach — AI Keto & Carnivore Meal Planner",
+  "short_name": "KetoCoach",
+  "description": "Your AI-powered keto and carnivore meal planner",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF8F2",
+  "theme_color": "#E8620A",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
