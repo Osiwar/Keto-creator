@@ -4,9 +4,9 @@ import { Check, Zap } from "lucide-react";
 import Link from "next/link";
 
 const plans = [
-  { name: "Free", price: "0", period: "forever", description: "Discover keto with AI", features: ["1 week meal plan", "Basic macro calculator", "Shopping list", "5 AI coach messages/day"], cta: "Start free", href: "/register", highlight: false },
-  { name: "Pro", price: "14", period: "month", description: "The full keto experience", features: ["Unlimited weekly plans", "Full macro tracking", "Unlimited AI coach", "Instant meal swaps", "Progress analytics", "Keto & carnivore modes"], cta: "Start 7-day free trial", href: "/register?plan=pro", highlight: true, badge: "Most Popular" },
-  { name: "Elite", price: "29", period: "month", description: "For the committed", features: ["Everything in Pro", "Custom meal creation", "Advanced analytics", "Priority support", "Export PDF plans", "Family mode (4 profiles)"], cta: "Start 7-day free trial", href: "/register?plan=elite", highlight: false },
+  { name: "Free", price: "0", period: "forever", description: "Discover keto with AI", features: ["1 week meal plan", "Basic macro calculator", "Shopping list", "5 AI coach messages/day"], cta: "Start free", href: "/register", highlight: false, comingSoon: false },
+  { name: "Pro", price: "14", period: "month", description: "The full keto experience", features: ["Unlimited weekly plans", "Full macro tracking", "Unlimited AI coach", "Instant meal swaps", "Progress analytics", "Keto & carnivore modes"], cta: "Start 7-day free trial", href: "/register?plan=pro", highlight: true, badge: "Most Popular", comingSoon: false },
+  { name: "Elite", price: "29", period: "month", description: "For the committed", features: ["Everything in Pro", "Custom meal creation", "Advanced analytics", "Priority support", "Export PDF plans", "Family mode (4 profiles)"], cta: "Coming Soon", href: "#", highlight: false, badge: "Coming Soon", comingSoon: true },
 ];
 
 function PlanCard({ plan, index }: { plan: typeof plans[0]; index: number }) {
@@ -16,7 +16,7 @@ function PlanCard({ plan, index }: { plan: typeof plans[0]; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.55, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative rounded-3xl p-8 flex flex-col ${plan.highlight ? "" : "card"}`}
+      className={`relative rounded-3xl p-8 flex flex-col ${plan.highlight ? "" : "card"} ${plan.comingSoon ? "opacity-75" : ""}`}
       style={plan.highlight ? {
         background: "linear-gradient(160deg, #E8620A 0%, #C4500A 100%)",
         boxShadow: "0 12px 48px rgba(232,98,10,0.35)",
@@ -24,7 +24,13 @@ function PlanCard({ plan, index }: { plan: typeof plans[0]; index: number }) {
     >
       {plan.badge && (
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-          <span className="flex items-center gap-1 text-xs font-bold px-4 py-1.5 rounded-full" style={{ background: "var(--text)", color: "#fff" }}>
+          <span
+            className="flex items-center gap-1 text-xs font-bold px-4 py-1.5 rounded-full"
+            style={plan.comingSoon
+              ? { background: "#6B7280", color: "#fff" }
+              : { background: "var(--text)", color: "#fff" }
+            }
+          >
             <Zap className="w-3 h-3" /> {plan.badge}
           </span>
         </div>
@@ -47,11 +53,21 @@ function PlanCard({ plan, index }: { plan: typeof plans[0]; index: number }) {
           </li>
         ))}
       </ul>
-      <Link href={plan.href}>
-        <button className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all ${plan.highlight ? "bg-white text-orange-600 hover:bg-orange-50" : "btn-primary justify-center"}`}>
-          {plan.cta}
+      {plan.comingSoon ? (
+        <button
+          disabled
+          className="w-full py-3.5 rounded-xl font-bold text-sm cursor-not-allowed"
+          style={{ background: "#E5E7EB", color: "#9CA3AF" }}
+        >
+          Coming Soon
         </button>
-      </Link>
+      ) : (
+        <Link href={plan.href}>
+          <button className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all ${plan.highlight ? "bg-white text-orange-600 hover:bg-orange-50" : "btn-primary justify-center"}`}>
+            {plan.cta}
+          </button>
+        </Link>
+      )}
     </motion.div>
   );
 }
