@@ -77,6 +77,7 @@ class AuthResponse(BaseModel):
 
 @router.post("/register", response_model=AuthResponse)
 async def register(data: RegisterRequest, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
+    print(f"[REGISTER] Called for {data.email}", flush=True)
     existing = await db.execute(select(User).where(User.email == data.email))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
