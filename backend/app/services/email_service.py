@@ -52,32 +52,34 @@ def _welcome_html(full_name: str) -> str:
         track your macros, and coach you 24/7 with AI — all tailored to your goals.
       </p>
 
-      <!-- Promo banner -->
+      <!-- Newsletter CTA -->
       <div style="background:linear-gradient(135deg,#FFF7F0,#FFE8D6);
                   border:1.5px solid #FFD4B2;border-radius:16px;
-                  padding:24px;margin-bottom:28px;text-align:center;">
+                  padding:24px;margin-bottom:20px;text-align:center;">
         <div style="font-size:13px;font-weight:700;color:#E8620A;
-                    text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
-          🎁 Exclusive offer for new members
+                    text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">
+          🎁 Exclusive offer — new members only
         </div>
-        <p style="color:#1A1A1A;font-size:15px;margin:0 0 16px;line-height:1.5;">
-          Subscribe to our newsletter and get <strong>50% off your first month</strong>
-          of Pro or Elite — for <strong>new subscribers only</strong>.
+        <p style="color:#1A1A1A;font-size:15px;margin:0 0 16px;line-height:1.6;">
+          Subscribe to the <strong>KetoCoach newsletter</strong> and receive a promo code
+          for <strong>50% off your first month</strong> of Pro or Elite.
+          <br/>Keto tips, recipes &amp; exclusive deals every week.
         </p>
-        <div style="background:#E8620A;color:#fff;display:inline-block;
-                    padding:12px 28px;border-radius:10px;font-size:22px;
-                    font-weight:900;letter-spacing:2px;">
-          {PROMO_CODE}
-        </div>
+        <a href="{settings.FRONTEND_URL}/#newsletter"
+           style="background:#E8620A;color:#fff;padding:13px 30px;border-radius:10px;
+                  text-decoration:none;font-weight:700;font-size:15px;
+                  display:inline-block;">
+          Subscribe &amp; get 50% off →
+        </a>
         <p style="color:#9CA3AF;font-size:12px;margin:10px 0 0;">
-          Valid for 1 month · Subscribe to the newsletter below to activate
+          Offer valid for 1 month · Code sent directly to your inbox
         </p>
       </div>
 
       <div style="text-align:center;margin-bottom:28px;">
-        <a href="{settings.FRONTEND_URL}/register"
-           style="background:#E8620A;color:#fff;padding:14px 36px;border-radius:12px;
-                  text-decoration:none;font-weight:700;font-size:16px;
+        <a href="{settings.FRONTEND_URL}/dashboard"
+           style="background:#1A1A1A;color:#fff;padding:13px 30px;border-radius:10px;
+                  text-decoration:none;font-weight:700;font-size:15px;
                   display:inline-block;">
           Go to my dashboard →
         </a>
