@@ -107,7 +107,7 @@ export default function NewsletterSection() {
                 You're in! Check your inbox.
               </p>
               <p className="text-sm" style={{ color: "#D1A882" }}>
-                Your code <strong style={{ color: "#FFA05C" }}>KETO50</strong> has been sent.
+                Your exclusive promo code has been sent to your inbox.
               </p>
             </motion.div>
           ) : (
