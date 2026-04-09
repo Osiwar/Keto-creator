@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -36,7 +37,7 @@ async def subscribe(data: SubscribeRequest, db: AsyncSession = Depends(get_db)):
         db.add(sub)
         await db.commit()
 
-    await send_newsletter_confirmation(data.email)
+    asyncio.create_task(send_newsletter_confirmation(data.email))
     return {"message": "Subscribed successfully"}
 
 
