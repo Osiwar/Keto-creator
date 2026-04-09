@@ -26,6 +26,8 @@ async def subscribe(data: SubscribeRequest, background_tasks: BackgroundTasks, d
 
     if existing:
         if existing.is_active:
+            # Already subscribed — resend the confirmation email anyway
+            background_tasks.add_task(send_newsletter_confirmation, data.email)
             return {"message": "Already subscribed"}
         # Re-subscribe
         existing.is_active = True
