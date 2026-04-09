@@ -1,5 +1,4 @@
 import smtplib
-import asyncio
 import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -161,24 +160,19 @@ def _send_email(to_email: str, subject: str, html: str):
         print(f"[EMAIL] ✗ Failed: {e}", flush=True)
 
 
-async def send_welcome_email(email: str, full_name: str):
+def send_welcome_email(email: str, full_name: str):
     print(f"[EMAIL] send_welcome_email called for {email}, SMTP_EMAIL set: {bool(settings.SMTP_EMAIL)}", flush=True)
     if not settings.SMTP_EMAIL:
         print("[EMAIL] SMTP_EMAIL not configured — skipping", flush=True)
         return
     html = _welcome_html(full_name)
-    loop = asyncio.get_running_loop()
-    await loop.run_in_executor(
-        None, _send_email, email, "Welcome to KetoCoach 🔥 — Your 50% offer inside", html
-    )
+    _send_email(email, "Welcome to KetoCoach 🔥 — Your 50% offer inside", html)
 
 
-async def send_newsletter_confirmation(email: str):
+def send_newsletter_confirmation(email: str):
     print(f"[EMAIL] send_newsletter_confirmation called for {email}, SMTP_EMAIL set: {bool(settings.SMTP_EMAIL)}", flush=True)
     if not settings.SMTP_EMAIL:
+        print("[EMAIL] SMTP_EMAIL not configured — skipping", flush=True)
         return
     html = _newsletter_confirmation_html(email)
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(
-        None, _send_email, email, f"✅ Your code {PROMO_CODE} is ready — 50% off KetoCoach Pro", html
-    )
+    _send_email(email, f"✅ Your code {PROMO_CODE} is ready — 50% off KetoCoach Pro", html)
