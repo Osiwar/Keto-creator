@@ -158,6 +158,7 @@ def _send_email(to_email: str, subject: str, html: str):
             headers={
                 "Authorization": f"Bearer {settings.RESEND_API_KEY}",
                 "Content-Type": "application/json",
+                "User-Agent": "KetoCoach/1.0",
             },
             method="POST",
         )
