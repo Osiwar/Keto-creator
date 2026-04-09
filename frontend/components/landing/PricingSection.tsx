@@ -68,7 +68,7 @@ function PlanCard({ plan, index }: { plan: (typeof plans)[0]; index: number }) {
   const [loading, setLoading] = useState(false);
 
   const handleSubscribe = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("keto_token");
     if (!token) {
       window.location.href = plan.href;
       return;
