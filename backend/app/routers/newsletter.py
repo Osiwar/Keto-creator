@@ -1,5 +1,4 @@
-import asyncio
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from pydantic import BaseModel, EmailStr
@@ -19,7 +18,7 @@ class SubscribeRequest(BaseModel):
 
 
 @router.post("/subscribe", status_code=200)
-async def subscribe(data: SubscribeRequest, db: AsyncSession = Depends(get_db)):
+async def subscribe(data: SubscribeRequest, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(NewsletterSubscriber).where(NewsletterSubscriber.email == data.email)
     )
@@ -37,7 +36,7 @@ async def subscribe(data: SubscribeRequest, db: AsyncSession = Depends(get_db)):
         db.add(sub)
         await db.commit()
 
-    asyncio.create_task(send_newsletter_confirmation(data.email))
+    background_tasks.add_task(send_newsletter_confirmation, data.email)
     return {"message": "Subscribed successfully"}
 
 

@@ -1,8 +1,11 @@
 import smtplib
 import asyncio
+import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 PROMO_CODE = "KETO50"
 
@@ -142,15 +145,20 @@ def _newsletter_confirmation_html(email: str) -> str:
 
 
 def _send_email(to_email: str, subject: str, html: str):
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = settings.SMTP_EMAIL
-    msg["To"] = to_email
-    msg.attach(MIMEText(html, "html"))
+    logger.info(f"[EMAIL] Sending to {to_email} | subject: {subject}")
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = settings.SMTP_EMAIL
+        msg["To"] = to_email
+        msg.attach(MIMEText(html, "html"))
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(settings.SMTP_EMAIL, settings.SMTP_PASSWORD)
-        server.sendmail(settings.SMTP_EMAIL, to_email, msg.as_string())
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(settings.SMTP_EMAIL, settings.SMTP_PASSWORD)
+            server.sendmail(settings.SMTP_EMAIL, to_email, msg.as_string())
+        logger.info(f"[EMAIL] ✓ Sent successfully to {to_email}")
+    except Exception as e:
+        logger.error(f"[EMAIL] ✗ Failed to send to {to_email}: {e}")
 
 
 async def send_welcome_email(email: str, full_name: str):

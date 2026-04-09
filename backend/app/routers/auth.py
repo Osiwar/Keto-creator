@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel, EmailStr
@@ -76,7 +76,7 @@ class AuthResponse(BaseModel):
 
 
 @router.post("/register", response_model=AuthResponse)
-async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
+async def register(data: RegisterRequest, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
     existing = await db.execute(select(User).where(User.email == data.email))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -113,8 +113,7 @@ async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
 
     token = create_access_token({"sub": str(user.id)})
 
-    # Fire-and-forget welcome email
-    asyncio.create_task(send_welcome_email(user.email, user.full_name or ""))
+    background_tasks.add_task(send_welcome_email, user.email, user.full_name or "")
 
     return AuthResponse(
         access_token=token,
