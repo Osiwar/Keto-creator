@@ -59,7 +59,10 @@ export default function LoginPage() {
               <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" placeholder="you@example.com" required />
             </div>
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: "var(--text-muted)" }}>Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>Password</label>
+                <Link href="/forgot-password" className="text-xs font-semibold" style={{ color: "var(--accent)" }}>Forgot password?</Link>
+              </div>
               <div className="relative">
                 <input type={showPw ? "text" : "password"} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field pr-12" placeholder="••••••••" required />
                 <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }}>
