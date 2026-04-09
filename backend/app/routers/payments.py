@@ -35,24 +35,28 @@ async def create_checkout_session(
     customer_id = sub.stripe_customer_id if sub else None
 
     # Create Stripe customer if not exists
-    if not customer_id:
-        customer = stripe.Customer.create(
-            email=current_user.email,
-            name=current_user.full_name or "",
-            metadata={"user_id": str(current_user.id)},
-        )
-        customer_id = customer.id
+    try:
+        if not customer_id:
+            customer = stripe.Customer.create(
+                email=current_user.email,
+                name=current_user.full_name or "",
+                metadata={"user_id": str(current_user.id)},
+            )
+            customer_id = customer.id
 
-    session = stripe.checkout.Session.create(
-        customer=customer_id,
-        payment_method_types=["card"],
-        line_items=[{"price": price_id, "quantity": 1}],
-        mode="subscription",
-        allow_promotion_codes=True,
-        success_url=f"{settings.FRONTEND_URL}/success?session_id={{CHECKOUT_SESSION_ID}}",
-        cancel_url=f"{settings.FRONTEND_URL}/pricing",
-        metadata={"user_id": str(current_user.id), "plan": plan},
-    )
+        session = stripe.checkout.Session.create(
+            customer=customer_id,
+            payment_method_types=["card"],
+            line_items=[{"price": price_id, "quantity": 1}],
+            mode="subscription",
+            allow_promotion_codes=True,
+            success_url=f"{settings.FRONTEND_URL}/success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{settings.FRONTEND_URL}/pricing",
+            metadata={"user_id": str(current_user.id), "plan": plan},
+        )
+    except Exception as e:
+        print(f"[STRIPE ERROR] {type(e).__name__}: {e}", flush=True)
+        raise HTTPException(status_code=500, detail=f"Stripe error: {str(e)}")
 
     return {"checkout_url": session.url}
 
