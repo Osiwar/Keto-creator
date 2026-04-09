@@ -84,13 +84,7 @@ export default function NewsletterSection() {
           className="text-base mb-8 leading-relaxed"
           style={{ color: "#D1A882" }}
         >
-          Subscribe to our newsletter and receive the promo code{" "}
-          <span
-            className="font-bold px-2 py-0.5 rounded-md"
-            style={{ background: "rgba(232,98,10,0.3)", color: "#FFA05C" }}
-          >
-            KETO50
-          </span>{" "}
+          Subscribe to our newsletter and receive an exclusive promo code
           directly in your inbox. Keto tips, recipes &amp; exclusive deals every week.
         </motion.p>
 

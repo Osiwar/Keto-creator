@@ -117,7 +117,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl leading-relaxed mb-10 max-w-lg"
+            className="text-lg md:text-xl leading-relaxed mb-6 max-w-lg"
             style={{ color: "var(--text-muted)" }}
           >
             Personalized weekly meal plans, automatic macro tracking, and a 24/7 AI nutrition coach — built exclusively for keto and carnivore.
@@ -127,7 +127,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-wrap gap-4 mb-12"
+            className="flex flex-wrap gap-4 mb-8"
           >
             <Link href="/register">
               <motion.button className="btn-primary text-base px-8 py-4" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
