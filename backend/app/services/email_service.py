@@ -162,7 +162,9 @@ def _send_email(to_email: str, subject: str, html: str):
 
 
 async def send_welcome_email(email: str, full_name: str):
+    logger.info(f"[EMAIL] send_welcome_email called for {email}, SMTP_EMAIL set: {bool(settings.SMTP_EMAIL)}")
     if not settings.SMTP_EMAIL:
+        logger.warning("[EMAIL] SMTP_EMAIL not configured — skipping")
         return
     html = _welcome_html(full_name)
     loop = asyncio.get_event_loop()
@@ -172,6 +174,7 @@ async def send_welcome_email(email: str, full_name: str):
 
 
 async def send_newsletter_confirmation(email: str):
+    logger.info(f"[EMAIL] send_newsletter_confirmation called for {email}, SMTP_EMAIL set: {bool(settings.SMTP_EMAIL)}")
     if not settings.SMTP_EMAIL:
         return
     html = _newsletter_confirmation_html(email)
