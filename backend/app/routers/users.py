@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from pydantic import BaseModel
@@ -11,6 +11,8 @@ from app.middleware.auth_middleware import get_current_user
 from app.services.macro_service import calculate_tdee, calculate_keto_macros
 
 router = APIRouter(prefix="/users", tags=["users"])
+
+ADMIN_EMAIL = "othmanesiwar@gmail.com"
 
 
 class OnboardingData(BaseModel):
@@ -40,7 +42,9 @@ class AllergiesUpdate(BaseModel):
 
 @router.get("/stats")
 async def get_stats(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    """Admin stats dashboard."""
+    """Admin stats dashboard — restricted to admin email."""
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Access denied")
     now = datetime.utcnow()
     week_ago = now - timedelta(days=7)
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)

@@ -107,8 +107,10 @@ export default function AdminPage() {
   );
 
   if (!stats) return (
-    <div className="p-8 text-center" style={{ color: "var(--text-muted)" }}>
-      Impossible de charger les statistiques.
+    <div className="flex flex-col items-center justify-center h-64 gap-3">
+      <div className="text-4xl">🔒</div>
+      <p className="font-bold" style={{ color: "var(--text)" }}>Accès refusé</p>
+      <p className="text-sm" style={{ color: "var(--text-muted)" }}>Cette page est réservée à l'administrateur.</p>
     </div>
   );
 
