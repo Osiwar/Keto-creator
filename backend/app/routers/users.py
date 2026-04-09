@@ -40,20 +40,43 @@ class AllergiesUpdate(BaseModel):
 
 @router.get("/stats")
 async def get_stats(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    """Admin stats — total users, new this week, diet breakdown."""
+    """Admin stats dashboard."""
+    now = datetime.utcnow()
+    week_ago = now - timedelta(days=7)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
     total = (await db.execute(select(func.count(User.id)))).scalar()
-    week_ago = datetime.utcnow() - timedelta(days=7)
-    new_this_week = (await db.execute(
-        select(func.count(User.id)).where(User.created_at >= week_ago)
+    new_today = (await db.execute(select(func.count(User.id)).where(User.created_at >= today_start))).scalar()
+    new_this_week = (await db.execute(select(func.count(User.id)).where(User.created_at >= week_ago))).scalar()
+    onboarding_done = (await db.execute(
+        select(func.count(UserProfile.id)).where(UserProfile.onboarding_done == True)
     )).scalar()
+
     diet_rows = (await db.execute(
-        select(UserProfile.diet_type, func.count(UserProfile.id))
-        .group_by(UserProfile.diet_type)
+        select(UserProfile.diet_type, func.count(UserProfile.id)).group_by(UserProfile.diet_type)
     )).all()
+
+    goal_rows = (await db.execute(
+        select(UserProfile.goal, func.count(UserProfile.id)).group_by(UserProfile.goal)
+    )).all()
+
+    recent_users = (await db.execute(
+        select(User.email, User.full_name, User.created_at)
+        .order_by(User.created_at.desc()).limit(10)
+    )).all()
+
     return {
         "total_users": total,
+        "new_today": new_today,
         "new_this_week": new_this_week,
-        "diet_breakdown": {row[0] or "unknown": row[1] for row in diet_rows},
+        "onboarding_done": onboarding_done,
+        "onboarding_rate": round(onboarding_done / total * 100) if total else 0,
+        "diet_breakdown": {row[0] or "not set": row[1] for row in diet_rows},
+        "goal_breakdown": {row[0] or "not set": row[1] for row in goal_rows},
+        "recent_signups": [
+            {"email": r[0], "name": r[1] or "", "joined": r[2].isoformat() if r[2] else ""}
+            for r in recent_users
+        ],
     }
 
 
