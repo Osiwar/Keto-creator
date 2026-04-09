@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from pydantic import BaseModel
 from typing import Optional
 import json
+from datetime import datetime, timedelta
 from app.database import get_db
 from app.models.user import User, UserProfile
 from app.middleware.auth_middleware import get_current_user
@@ -35,6 +36,25 @@ class ProfileUpdate(BaseModel):
 
 class AllergiesUpdate(BaseModel):
     allergies: list[str]
+
+
+@router.get("/stats")
+async def get_stats(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Admin stats — total users, new this week, diet breakdown."""
+    total = (await db.execute(select(func.count(User.id)))).scalar()
+    week_ago = datetime.utcnow() - timedelta(days=7)
+    new_this_week = (await db.execute(
+        select(func.count(User.id)).where(User.created_at >= week_ago)
+    )).scalar()
+    diet_rows = (await db.execute(
+        select(UserProfile.diet_type, func.count(UserProfile.id))
+        .group_by(UserProfile.diet_type)
+    )).all()
+    return {
+        "total_users": total,
+        "new_this_week": new_this_week,
+        "diet_breakdown": {row[0] or "unknown": row[1] for row in diet_rows},
+    }
 
 
 @router.get("/profile")
