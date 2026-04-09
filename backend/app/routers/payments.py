@@ -10,6 +10,7 @@ from app.models.user import User
 from app.models.subscription import Subscription, StripeEvent
 from app.config import settings
 from app.middleware.auth_middleware import get_current_user
+from app.services.email_service import send_subscription_confirmation
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -106,6 +107,17 @@ async def stripe_webhook(request: Request, db: AsyncSession = Depends(get_db)):
                 plan_tier=plan,
                 status="active",
             ))
+
+        # Send confirmation email
+        user_result = await db.execute(select(User).where(User.id == user_id))
+        user = user_result.scalar_one_or_none()
+        if user:
+            import threading
+            threading.Thread(
+                target=send_subscription_confirmation,
+                args=(user.email, user.full_name or "", plan),
+                daemon=True,
+            ).start()
 
     elif event["type"] == "customer.subscription.updated":
         result = await db.execute(

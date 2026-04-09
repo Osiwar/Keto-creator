@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [weekPlan, setWeekPlan] = useState<any>(null);
   const [generating, setGenerating] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [planLimitReached, setPlanLimitReached] = useState(false);
 
   const weekStart = formatDate(getWeekStart());
   const today = new Date().getDay();
@@ -39,6 +40,10 @@ export default function DashboardPage() {
     try {
       const res = await api.post("/meal-plans/generate", { week_start: weekStart });
       setWeekPlan(res.data);
+    } catch (err: any) {
+      if (err.response?.data?.detail === "PLAN_LIMIT_REACHED") {
+        setPlanLimitReached(true);
+      }
     } finally { setGenerating(false); }
   };
 
@@ -77,7 +82,29 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* No plan state */}
-      {!weekPlan && (
+      {planLimitReached && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-3xl p-8 text-center mb-8"
+          style={{ background: "linear-gradient(135deg, #FFF7F0, #FFE8D6)", border: "1.5px solid #FFD4B2" }}
+        >
+          <div className="text-4xl mb-3">⚡</div>
+          <h2 className="text-2xl font-black mb-2" style={{ color: "var(--text)" }}>Free plan limit reached</h2>
+          <p className="mb-6" style={{ color: "var(--text-muted)" }}>
+            The free plan includes 1 meal plan. Upgrade to Pro for unlimited weekly plans.
+          </p>
+          <a
+            href="/#pricing"
+            className="inline-block px-8 py-4 rounded-2xl font-bold text-white shadow-md"
+            style={{ background: "var(--accent)" }}
+          >
+            Upgrade to Pro — 14€/month →
+          </a>
+        </motion.div>
+      )}
+
+      {!weekPlan && !planLimitReached && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

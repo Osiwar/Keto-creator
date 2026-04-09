@@ -50,7 +50,23 @@ function MessageBubble({ message }: { message: Message }) {
           boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
         }}
       >
-        {message.streaming && message.content === "" ? (
+        {message.content === "UPGRADE_REQUIRED" ? (
+          <div>
+            <p className="font-semibold mb-2" style={{ color: "var(--text)" }}>
+              ⚡ Daily limit reached
+            </p>
+            <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>
+              You&apos;ve used your 5 free messages for today. Upgrade to Pro for unlimited AI coaching.
+            </p>
+            <a
+              href="/#pricing"
+              className="inline-block px-4 py-2 rounded-xl text-white text-sm font-bold"
+              style={{ background: "var(--accent)" }}
+            >
+              Upgrade to Pro →
+            </a>
+          </div>
+        ) : message.streaming && message.content === "" ? (
           <div className="flex gap-1 items-center py-1">
             {[0, 1, 2].map((i) => (
               <motion.div
@@ -110,6 +126,20 @@ export default function CoachPage() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ message: msg, session_id: sessionId }),
       });
+
+      if (res.status === 429) {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: "assistant",
+            content: "UPGRADE_REQUIRED",
+            streaming: false,
+          };
+          return updated;
+        });
+        setLoading(false);
+        return;
+      }
 
       if (!res.body) return;
       const reader = res.body.getReader();

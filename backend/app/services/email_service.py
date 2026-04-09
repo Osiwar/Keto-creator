@@ -183,6 +183,82 @@ def send_welcome_email(email: str, full_name: str):
     _send_email(email, "Welcome to KetoCoach 🔥 — Your 50% offer inside", html)
 
 
+def _subscription_confirmation_html(full_name: str, plan: str) -> str:
+    name = full_name.split()[0] if full_name else "there"
+    plan_label = "Pro" if plan == "pro" else "Elite"
+    price = "14€" if plan == "pro" else "29€"
+    features = [
+        "Unlimited weekly meal plans",
+        "Unlimited AI Coach messages",
+        "Instant meal swaps",
+        "Full macro tracking",
+        "Progress analytics",
+        "Keto & carnivore modes",
+    ] if plan == "pro" else [
+        "Everything in Pro",
+        "Custom meal creation",
+        "Advanced analytics",
+        "Priority support",
+        "Export PDF plans",
+        "Family mode (4 profiles)",
+    ]
+    features_html = "".join(
+        f'<li style="padding:5px 0;color:#4B5563;font-size:14px;">✅ {f}</li>'
+        for f in features
+    )
+    content = f"""
+      <h1 style="color:#1A1A1A;font-size:26px;font-weight:800;margin:0 0 8px;">
+        Welcome to {plan_label}, {name}! 🎉
+      </h1>
+      <p style="color:#6B7280;font-size:15px;line-height:1.6;margin:0 0 24px;">
+        Your subscription is now active. You have full access to all {plan_label} features.
+      </p>
+
+      <div style="background:linear-gradient(135deg,#FFF7F0,#FFE8D6);
+                  border:1.5px solid #FFD4B2;border-radius:16px;
+                  padding:24px;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#E8620A;
+                        text-transform:uppercase;letter-spacing:1px;">Active plan</div>
+            <div style="font-size:24px;font-weight:900;color:#1A1A1A;margin-top:4px;">
+              KetoCoach {plan_label}
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:28px;font-weight:900;color:#E8620A;">{price}</div>
+            <div style="font-size:13px;color:#9CA3AF;">/month</div>
+          </div>
+        </div>
+        <ul style="margin:0;padding-left:0;list-style:none;">
+          {features_html}
+        </ul>
+      </div>
+
+      <div style="text-align:center;margin-bottom:28px;">
+        <a href="{settings.FRONTEND_URL}/dashboard"
+           style="background:#E8620A;color:#fff;padding:14px 36px;border-radius:12px;
+                  text-decoration:none;font-weight:700;font-size:16px;
+                  display:inline-block;">
+          Go to my dashboard →
+        </a>
+      </div>
+
+      <p style="color:#9CA3AF;font-size:12px;text-align:center;margin:0;">
+        You can manage your subscription anytime from your dashboard.
+      </p>
+    """
+    return _base_template(content)
+
+
+def send_subscription_confirmation(email: str, full_name: str, plan: str):
+    print(f"[EMAIL] send_subscription_confirmation for {email} plan={plan}", flush=True)
+    if not settings.RESEND_API_KEY:
+        return
+    html = _subscription_confirmation_html(full_name, plan)
+    _send_email(email, f"🎉 Your KetoCoach {plan.title()} subscription is active!", html)
+
+
 def send_newsletter_confirmation(email: str):
     print(f"[EMAIL] send_newsletter_confirmation called for {email}, RESEND_API_KEY set: {bool(settings.RESEND_API_KEY)}", flush=True)
     if not settings.RESEND_API_KEY:

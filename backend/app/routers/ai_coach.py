@@ -1,18 +1,22 @@
 import json
 import asyncio
+from datetime import datetime, date
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 from pydantic import BaseModel
 from typing import Optional
 from app.database import get_db, AsyncSessionLocal
 from app.models.user import User, UserProfile
 from app.models.chat import ChatSession, ChatMessage
+from app.models.subscription import Subscription
 from app.middleware.auth_middleware import get_current_user
 from app.services.ai_service import stream_chat
 from app.config import settings
+
+FREE_DAILY_MSG_LIMIT = 5
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 
@@ -31,6 +35,27 @@ async def chat(
     # Check API key is configured
     if not settings.ANTHROPIC_API_KEY:
         raise HTTPException(status_code=503, detail="Anthropic API key not configured")
+
+    # Check subscription tier
+    sub_result = await db.execute(select(Subscription).where(Subscription.user_id == current_user.id))
+    sub = sub_result.scalar_one_or_none()
+    plan_tier = sub.plan_tier if sub else "free"
+
+    # Free plan: limit to 5 messages/day
+    if plan_tier == "free":
+        today_start = datetime.combine(date.today(), datetime.min.time())
+        count_result = await db.execute(
+            select(func.count(ChatMessage.id))
+            .join(ChatSession, ChatSession.id == ChatMessage.session_id)
+            .where(
+                ChatSession.user_id == current_user.id,
+                ChatMessage.role == "user",
+                ChatMessage.created_at >= today_start,
+            )
+        )
+        msg_count = count_result.scalar() or 0
+        if msg_count >= FREE_DAILY_MSG_LIMIT:
+            raise HTTPException(status_code=429, detail="DAILY_LIMIT_REACHED")
 
     # Get or create session
     if data.session_id:

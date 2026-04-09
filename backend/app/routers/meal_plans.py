@@ -2,12 +2,13 @@ import json
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 from pydantic import BaseModel
 from app.database import get_db
 from app.models.meal import Meal, MealPlan, MealPlanSlot
 from app.models.user import User, UserProfile
+from app.models.subscription import Subscription
 from app.middleware.auth_middleware import get_current_user
 from app.services.meal_service import generate_week_plan
 from app.routers.meals import meal_to_dict
@@ -48,6 +49,20 @@ async def generate_plan(
     profile = profile_result.scalar_one_or_none()
     if not profile or not profile.onboarding_done:
         raise HTTPException(status_code=400, detail="Complete onboarding first")
+
+    # Check subscription tier
+    sub_result = await db.execute(select(Subscription).where(Subscription.user_id == current_user.id))
+    sub = sub_result.scalar_one_or_none()
+    plan_tier = sub.plan_tier if sub else "free"
+
+    # Free plan: limit to 1 meal plan total
+    if plan_tier == "free":
+        count_result = await db.execute(
+            select(func.count(MealPlan.id)).where(MealPlan.user_id == current_user.id)
+        )
+        plan_count = count_result.scalar() or 0
+        if plan_count >= 1:
+            raise HTTPException(status_code=403, detail="PLAN_LIMIT_REACHED")
 
     plan = await generate_week_plan(db, current_user.id, week_start, profile)
 
