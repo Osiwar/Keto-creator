@@ -9,7 +9,7 @@ from app.database import get_db
 from app.models.user import User
 from app.models.subscription import Subscription, StripeEvent
 from app.config import settings
-from app.routers.auth import get_current_user
+from app.middleware.auth_middleware import get_current_user
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
