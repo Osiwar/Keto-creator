@@ -1,7 +1,6 @@
-import smtplib
 import logging
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import urllib.request
+import json
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -146,33 +145,42 @@ def _newsletter_confirmation_html(email: str) -> str:
 def _send_email(to_email: str, subject: str, html: str):
     print(f"[EMAIL] Sending to {to_email}", flush=True)
     try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = settings.SMTP_EMAIL
-        msg["To"] = to_email
-        msg.attach(MIMEText(html, "html"))
+        payload = json.dumps({
+            "from": settings.EMAIL_FROM,
+            "to": [to_email],
+            "subject": subject,
+            "html": html,
+        }).encode("utf-8")
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(settings.SMTP_EMAIL, settings.SMTP_PASSWORD)
-            server.sendmail(settings.SMTP_EMAIL, to_email, msg.as_string())
-        print(f"[EMAIL] ✓ Sent successfully to {to_email}", flush=True)
+        req = urllib.request.Request(
+            "https://api.resend.com/emails",
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            body = resp.read().decode()
+            print(f"[EMAIL] ✓ Sent successfully to {to_email} | {body}", flush=True)
     except Exception as e:
         print(f"[EMAIL] ✗ Failed: {e}", flush=True)
 
 
 def send_welcome_email(email: str, full_name: str):
-    print(f"[EMAIL] send_welcome_email called for {email}, SMTP_EMAIL set: {bool(settings.SMTP_EMAIL)}", flush=True)
-    if not settings.SMTP_EMAIL:
-        print("[EMAIL] SMTP_EMAIL not configured — skipping", flush=True)
+    print(f"[EMAIL] send_welcome_email called for {email}, RESEND_API_KEY set: {bool(settings.RESEND_API_KEY)}", flush=True)
+    if not settings.RESEND_API_KEY:
+        print("[EMAIL] RESEND_API_KEY not configured — skipping", flush=True)
         return
     html = _welcome_html(full_name)
     _send_email(email, "Welcome to KetoCoach 🔥 — Your 50% offer inside", html)
 
 
 def send_newsletter_confirmation(email: str):
-    print(f"[EMAIL] send_newsletter_confirmation called for {email}, SMTP_EMAIL set: {bool(settings.SMTP_EMAIL)}", flush=True)
-    if not settings.SMTP_EMAIL:
-        print("[EMAIL] SMTP_EMAIL not configured — skipping", flush=True)
+    print(f"[EMAIL] send_newsletter_confirmation called for {email}, RESEND_API_KEY set: {bool(settings.RESEND_API_KEY)}", flush=True)
+    if not settings.RESEND_API_KEY:
+        print("[EMAIL] RESEND_API_KEY not configured — skipping", flush=True)
         return
     html = _newsletter_confirmation_html(email)
     _send_email(email, f"✅ Your code {PROMO_CODE} is ready — 50% off KetoCoach Pro", html)

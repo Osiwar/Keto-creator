@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:3000"
     SMTP_EMAIL: str = ""
     SMTP_PASSWORD: str = ""
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM: str = "KetoCoach <noreply@keto-coach.app>"
 
     class Config:
         env_file = ".env"
