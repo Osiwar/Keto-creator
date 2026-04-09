@@ -113,7 +113,9 @@ async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
 
     token = create_access_token({"sub": str(user.id)})
 
+    print(f"[REGISTER] Adding welcome email task for {user.email}", flush=True)
     background_tasks.add_task(send_welcome_email, user.email, user.full_name or "")
+    print(f"[REGISTER] Task added", flush=True)
 
     return AuthResponse(
         access_token=token,
