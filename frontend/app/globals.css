@@ -55,9 +55,9 @@ body {
   .btn-primary:active { transform: translateY(0); }
 
   .btn-outline {
-    background: transparent;
+    background: rgba(255,255,255,0.85);
     color: var(--accent);
-    font-weight: 600;
+    font-weight: 700;
     padding: 14px 32px;
     border-radius: 14px;
     border: 2px solid var(--accent);
@@ -66,9 +66,11 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    box-shadow: 0 2px 12px rgba(232,98,10,0.12);
   }
   .btn-outline:hover {
     background: var(--accent-light);
+    box-shadow: 0 4px 20px rgba(232,98,10,0.2);
     transform: translateY(-1px);
   }
 
