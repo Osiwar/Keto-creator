@@ -99,6 +99,10 @@ async def register(data: RegisterRequest, background_tasks: BackgroundTasks, db:
     await db.refresh(user)
 
     token = create_access_token({"sub": str(user.id)})
+
+    print(f"[REGISTER] Adding welcome email task for {user.email}", flush=True)
+    background_tasks.add_task(send_welcome_email, user.email, user.full_name or "")
+
     return AuthResponse(
         access_token=token,
         user={"id": user.id, "email": user.email, "full_name": user.full_name},
@@ -113,10 +117,6 @@ async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_access_token({"sub": str(user.id)})
-
-    print(f"[REGISTER] Adding welcome email task for {user.email}", flush=True)
-    background_tasks.add_task(send_welcome_email, user.email, user.full_name or "")
-    print(f"[REGISTER] Task added", flush=True)
 
     return AuthResponse(
         access_token=token,
