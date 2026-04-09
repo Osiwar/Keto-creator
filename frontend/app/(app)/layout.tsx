@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Flame, LayoutDashboard, Calendar, ShoppingCart, MessageCircle, LogOut, Menu, X } from "lucide-react";
+import { Flame, LayoutDashboard, Calendar, ShoppingCart, MessageCircle, LogOut, Menu, X, UserCircle } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/meal-plan", label: "Meal Plan", icon: Calendar },
   { href: "/shopping", label: "Shopping", icon: ShoppingCart },
   { href: "/coach", label: "AI Coach", icon: MessageCircle },
+  { href: "/profile", label: "Profile", icon: UserCircle },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

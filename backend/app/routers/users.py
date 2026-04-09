@@ -40,6 +40,24 @@ class AllergiesUpdate(BaseModel):
     allergies: list[str]
 
 
+class GoalsUpdate(BaseModel):
+    diet_type: Optional[str] = None
+    goal: Optional[str] = None
+    activity_level: Optional[str] = None
+    age: Optional[int] = None
+    weight_kg: Optional[float] = None
+    height_cm: Optional[float] = None
+    gender: Optional[str] = None
+    weekly_budget: Optional[float] = None
+
+
+class AccountUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+
 @router.get("/stats")
 async def get_stats(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """Admin stats dashboard — restricted to admin email."""
@@ -110,6 +128,74 @@ async def get_profile(
         "onboarding_done": profile.onboarding_done,
         "timezone": profile.timezone,
     }
+
+
+@router.patch("/goals")
+async def update_goals(
+    data: GoalsUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(UserProfile).where(UserProfile.user_id == current_user.id))
+    profile = result.scalar_one_or_none()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    if data.diet_type is not None: profile.diet_type = data.diet_type
+    if data.goal is not None: profile.goal = data.goal
+    if data.activity_level is not None: profile.activity_level = data.activity_level
+    if data.age is not None: profile.age = data.age
+    if data.weight_kg is not None: profile.weight_kg = data.weight_kg
+    if data.height_cm is not None: profile.height_cm = data.height_cm
+    if data.gender is not None: profile.gender = data.gender
+    if data.weekly_budget is not None: profile.weekly_budget = data.weekly_budget
+
+    # Recalculate macros
+    w = profile.weight_kg or 70
+    h = profile.height_cm or 170
+    age = profile.age or 30
+    gender = profile.gender or "male"
+    activity = profile.activity_level or "moderate"
+    goal = profile.goal or "fat_loss"
+    diet = profile.diet_type or "keto"
+
+    tdee = calculate_tdee(w, h, age, gender, activity)
+    macros = calculate_keto_macros(tdee, goal, diet)
+    profile.target_calories = macros["calories"]
+    profile.target_fat_g = macros["fat_g"]
+    profile.target_protein_g = macros["protein_g"]
+    profile.target_carbs_g = macros["carbs_g"]
+
+    await db.commit()
+    return {"success": True, "macros": macros}
+
+
+@router.patch("/account")
+async def update_account(
+    data: AccountUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.services.auth_service import hash_password, verify_password
+
+    if data.full_name is not None:
+        current_user.full_name = data.full_name
+
+    if data.email is not None and data.email != current_user.email:
+        existing = await db.execute(select(User).where(User.email == data.email))
+        if existing.scalar_one_or_none():
+            raise HTTPException(status_code=400, detail="Email already in use")
+        current_user.email = data.email
+
+    if data.new_password:
+        if not data.current_password:
+            raise HTTPException(status_code=400, detail="Current password required")
+        if not verify_password(data.current_password, current_user.hashed_password):
+            raise HTTPException(status_code=400, detail="Current password incorrect")
+        current_user.hashed_password = hash_password(data.new_password)
+
+    await db.commit()
+    return {"success": True, "email": current_user.email, "full_name": current_user.full_name}
 
 
 @router.patch("/allergies")
