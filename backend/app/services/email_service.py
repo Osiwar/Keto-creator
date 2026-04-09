@@ -164,6 +164,9 @@ def _send_email(to_email: str, subject: str, html: str):
         with urllib.request.urlopen(req, timeout=10) as resp:
             body = resp.read().decode()
             print(f"[EMAIL] ✓ Sent successfully to {to_email} | {body}", flush=True)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        print(f"[EMAIL] ✗ HTTP {e.code}: {body}", flush=True)
     except Exception as e:
         print(f"[EMAIL] ✗ Failed: {e}", flush=True)
 
