@@ -6,6 +6,7 @@ import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import MacroCalculator from "@/components/landing/MacroCalculator";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import PricingSection from "@/components/landing/PricingSection";
+import NewsletterSection from "@/components/landing/NewsletterSection";
 import Link from "next/link";
 import { Flame, ArrowRight } from "lucide-react";
 
@@ -60,6 +61,7 @@ export default function LandingPage() {
       <MacroCalculator />
       <TestimonialsSection />
       <PricingSection />
+      <NewsletterSection />
 
       {/* Final CTA */}
       <section className="py-28 px-6 text-center relative overflow-hidden" style={{ background: "linear-gradient(160deg, #FFF8F2 0%, var(--bg-alt) 100%)" }}>

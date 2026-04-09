@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.config import settings
-from app.routers import auth, users, macros, meals, meal_plans, shopping, ai_coach
+from app.routers import auth, users, macros, meals, meal_plans, shopping, ai_coach, newsletter
 
 
 async def seed_meals():
@@ -50,7 +50,7 @@ async def seed_meals():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Import all models so SQLAlchemy knows about them
-    from app.models import user, meal, shopping, subscription, chat
+    from app.models import user, meal, shopping, subscription, chat, newsletter as newsletter_model
 
     try:
         async with engine.begin() as conn:
@@ -83,6 +83,7 @@ app.include_router(meals.router, prefix="/api/v1")
 app.include_router(meal_plans.router, prefix="/api/v1")
 app.include_router(shopping.router, prefix="/api/v1")
 app.include_router(ai_coach.router, prefix="/api/v1")
+app.include_router(newsletter.router, prefix="/api/v1")
 
 
 @app.get("/")

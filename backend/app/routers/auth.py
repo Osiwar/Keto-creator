@@ -13,6 +13,7 @@ from app.database import get_db
 from app.models.user import User, UserProfile
 from app.models.subscription import Subscription
 from app.services.auth_service import hash_password, verify_password, create_access_token
+from app.services.email_service import send_welcome_email
 from app.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -111,6 +112,10 @@ async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_access_token({"sub": str(user.id)})
+
+    # Fire-and-forget welcome email
+    asyncio.create_task(send_welcome_email(user.email, user.full_name or ""))
+
     return AuthResponse(
         access_token=token,
         user={"id": user.id, "email": user.email, "full_name": user.full_name},
