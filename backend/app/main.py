@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.config import settings
-from app.routers import auth, users, macros, meals, meal_plans, shopping, ai_coach, newsletter
+from app.routers import auth, users, macros, meals, meal_plans, shopping, ai_coach, newsletter, payments
 
 
 async def seed_meals():
@@ -84,6 +84,7 @@ app.include_router(meal_plans.router, prefix="/api/v1")
 app.include_router(shopping.router, prefix="/api/v1")
 app.include_router(ai_coach.router, prefix="/api/v1")
 app.include_router(newsletter.router, prefix="/api/v1")
+app.include_router(payments.router, prefix="/api/v1")
 
 
 @app.get("/")
